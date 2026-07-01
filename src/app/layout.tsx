@@ -4,6 +4,7 @@ import "./globals.css";
 import ClientLayoutWrapper from "@/components/ClientLayoutWrapper";
 import { Toaster } from "react-hot-toast";
 import Providers from "@/components/Providers";
+import AnalyticsTracker from "@/components/AnalyticsTracker";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -46,6 +47,7 @@ export default function RootLayout({
               },
             }}
           />
+          <AnalyticsTracker />
           <ClientLayoutWrapper>
             {children}
           </ClientLayoutWrapper>

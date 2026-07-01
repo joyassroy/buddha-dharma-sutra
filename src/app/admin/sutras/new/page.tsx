@@ -12,7 +12,7 @@ export default function NewSutra() {
   const [formData, setFormData] = useState({
     titleEn: "",
     titleBn: "",
-    contentEn: "",
+    contentPali: "",
     contentBn: "",
     source: "",
   });
@@ -87,11 +87,11 @@ export default function NewSutra() {
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">English Content (Verses)</label>
+          <label className="text-sm font-medium text-gray-700">Pali Content (Verses)</label>
           <textarea 
-            name="contentEn" value={formData.contentEn} onChange={handleChange} rows={6}
+            name="contentPali" value={formData.contentPali} onChange={handleChange} rows={6}
             className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-            placeholder="Write the english translation here..."
+            placeholder="Write the Pali text here..."
           />
         </div>
 

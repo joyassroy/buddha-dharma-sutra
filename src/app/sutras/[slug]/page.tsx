@@ -73,19 +73,19 @@ export default async function SutraDetail({ params }: { params: Promise<{ slug: 
               <Quote size={80} />
             </div>
 
-            <div className={`grid grid-cols-1 ${sutra.contentEn && sutra.contentBn ? 'lg:grid-cols-2' : ''} gap-12 lg:gap-20 mt-8`}>
-              {/* English Side */}
-              {sutra.contentEn && (
+            <div className={`grid grid-cols-1 ${sutra.contentPali && sutra.contentBn ? 'lg:grid-cols-2' : ''} gap-12 lg:gap-20 mt-8`}>
+              {/* Pali Side */}
+              {sutra.contentPali && (
                 <div className="relative">
                   <div className="sticky top-28 bg-white/90 backdrop-blur z-20 pb-4 mb-8 border-b border-gray-100">
                     <h3 className="text-sm font-bold text-primary uppercase tracking-widest flex items-center gap-3">
                       <span className="w-2 h-2 rounded-full bg-primary" />
-                      English Translation
+                      Pali Text
                     </h3>
                   </div>
-                  {/* Drop Cap for English */}
+                  {/* Drop Cap for Pali */}
                   <div className="prose prose-lg md:prose-xl prose-emerald max-w-none text-gray-800 leading-[1.8] font-serif whitespace-pre-wrap first-letter:text-7xl first-letter:font-bold first-letter:text-primary first-letter:mr-3 first-letter:float-left first-letter:leading-none">
-                    {sutra.contentEn}
+                    {sutra.contentPali}
                   </div>
                 </div>
               )}

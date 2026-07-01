@@ -35,6 +35,25 @@ export default function LibrarySearch({ initialBooks }: { initialBooks: BookType
     return results.map(result => result.item);
   }, [query, fuse, initialBooks]);
 
+  // Track search query with a debounce
+  useEffect(() => {
+    if (!query || query.length < 3) return;
+
+    const timeoutId = setTimeout(() => {
+      fetch("/api/analytics", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          eventType: "SEARCH",
+          path: "/library",
+          details: query.toLowerCase(),
+        }),
+      }).catch(() => {});
+    }, 1500); // Wait 1.5 seconds after typing stops before logging
+
+    return () => clearTimeout(timeoutId);
+  }, [query]);
+
   return (
     <div className="max-w-6xl mx-auto px-6 py-16">
       {/* Search Input */}

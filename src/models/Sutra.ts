@@ -3,7 +3,7 @@ import mongoose, { Schema, Document } from "mongoose";
 export interface ISutra extends Document {
   titleEn?: string;
   titleBn?: string;
-  contentEn?: string;
+  contentPali?: string;
   contentBn?: string;
   source: string;
   slug: string;
@@ -15,7 +15,7 @@ const SutraSchema: Schema = new Schema(
   {
     titleEn: { type: String, default: "" },
     titleBn: { type: String, default: "" },
-    contentEn: { type: String, default: "" },
+    contentPali: { type: String, default: "" },
     contentBn: { type: String, default: "" },
     source: { type: String, required: true },
     slug: { type: String, required: true, unique: true },

@@ -40,7 +40,7 @@ export const authOptions: NextAuthOptions = {
       if (account?.provider === "google") {
         // Find if user already exists
         let dbUser = await User.findOne({ email: user.email });
-        
+
         if (!dbUser) {
           // Create new user if they don't exist
           dbUser = await User.create({
@@ -50,7 +50,7 @@ export const authOptions: NextAuthOptions = {
             role: user.email === adminEmail ? "admin" : "user",
           });
         }
-        
+
         // Attach role to the user object so it gets passed to jwt callback
         (user as any).role = dbUser.role;
         return true;
