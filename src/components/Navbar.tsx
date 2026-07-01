@@ -37,6 +37,7 @@ export default function Navbar() {
     { name: "Insights", href: "/blog" },
     { name: "Library", href: "/library" },
     { name: "Donate", href: "/donate" },
+    { name: "About Us", href: "/about" },
   ];
 
   return (
