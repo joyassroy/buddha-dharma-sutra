@@ -5,6 +5,8 @@ import Donor from "@/models/Donor";
 
 import DonateButton from "@/components/DonateButton";
 
+export const dynamic = "force-dynamic";
+
 async function getDonors() {
   await connectToDatabase();
   const donors = await Donor.find({}).sort({ createdAt: -1 });

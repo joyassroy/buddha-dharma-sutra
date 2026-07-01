@@ -4,6 +4,8 @@ import User from "@/models/User";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Insights & Articles | Buddha Dharma Sutra",
   description: "Read profound insights and articles written by our community on the path of Dharma.",

@@ -5,6 +5,8 @@ import { ArrowRight, Library as LibraryIcon } from "lucide-react";
 
 import LibrarySearch from "@/components/LibrarySearch";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Dharma Library | Buddha Dharma Sutra",
   description: "Explore our digital library of Buddhist books, translations, and guides.",

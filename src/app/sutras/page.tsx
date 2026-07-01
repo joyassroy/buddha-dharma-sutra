@@ -3,6 +3,8 @@ import Sutra from "@/models/Sutra";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Sacred Sutras | Buddha Dharma Sutra",
   description: "Read and explore the sacred teachings of the Buddha in English and Bengali.",
