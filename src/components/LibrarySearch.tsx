@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { Search, ArrowRight, Library as LibraryIcon } from "lucide-react";
 import Fuse from "fuse.js";
