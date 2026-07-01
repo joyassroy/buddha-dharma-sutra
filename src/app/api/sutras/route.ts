@@ -18,7 +18,7 @@ export async function POST(req: Request) {
   try {
     await connectToDatabase();
     const body = await req.json();
-    
+
     // Simple slug generator fallback
     const baseTitle = body.titleEn || body.titleBn || "untitled";
     const slug = baseTitle.toLowerCase().replace(/[^a-z0-9\u0980-\u09FF]+/g, '-').replace(/(^-|-$)+/g, '') + '-' + Date.now();

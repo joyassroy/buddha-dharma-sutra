@@ -13,27 +13,23 @@ async function getBook(slug: string) {
 
 function getEmbedUrl(url: string) {
   try {
-    // If it's a Google Drive URL (web view format)
-    if (url.includes("drive.google.com/file/d/")) {
-      const match = url.match(/\/d\/(.*?)\//);
-      if (match && match[1]) {
-        return `https://drive.google.com/file/d/${match[1]}/preview`;
+    if (!url) return "";
+    
+    // Check if it's a Google Drive link and extract the ID safely
+    if (url.includes("drive.google.com")) {
+      const idMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+      if (idMatch && idMatch[1]) {
+        return `https://drive.google.com/file/d/${idMatch[1]}/preview`;
       }
     }
-    // If it's a Google Drive URL (direct uc format)
-    if (url.includes("drive.google.com/uc?id=")) {
-      const urlObj = new URL(url);
-      const id = urlObj.searchParams.get("id");
-      if (id) {
-        return `https://drive.google.com/file/d/${id}/preview`;
-      }
-    }
-    // If it's a PDF (like from Cloudinary), use Google gview to bypass iframe restrictions
+    
+    // For direct PDF links (like Cloudinary), wrap in Google Docs Viewer for mobile compatibility
+    // Mobile browsers (iOS Safari, Android Chrome) cannot render PDFs directly in an iframe.
     if (url.toLowerCase().endsWith(".pdf")) {
       return `https://docs.google.com/gview?url=${encodeURIComponent(url)}&embedded=true`;
     }
     
-    // Fallback for other URLs
+    // Fallback
     return url;
   } catch {
     return url;
@@ -104,19 +100,21 @@ export default async function BookDetail({ params }: { params: Promise<{ slug: s
               </p>
             )}
 
-            <div className="flex items-center justify-center md:justify-start gap-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4 w-full">
               <a 
                 href={book.fileUrl} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-full font-bold hover:bg-emerald-700 transition-colors shadow-lg shadow-primary/20"
+                className="w-full sm:w-auto inline-flex justify-center items-center gap-2 bg-primary text-white px-6 py-3 rounded-full font-bold hover:bg-emerald-700 transition-colors shadow-lg shadow-primary/20"
               >
                 <Download size={18} />
                 Download PDF
               </a>
               <a 
-                href="#reader" 
-                className="inline-flex items-center gap-2 bg-white text-gray-800 px-6 py-3 rounded-full font-bold hover:bg-gray-50 transition-colors shadow-sm border border-gray-200"
+                href={embedUrl}
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto inline-flex justify-center items-center gap-2 bg-white text-gray-800 px-6 py-3 rounded-full font-bold hover:bg-gray-50 transition-colors shadow-sm border border-gray-200"
               >
                 <BookOpen size={18} />
                 Read Online
@@ -124,32 +122,6 @@ export default async function BookDetail({ params }: { params: Promise<{ slug: s
             </div>
           </div>
 
-        </div>
-      </div>
-
-      {/* PDF Reader Area */}
-      <div id="reader" className="max-w-6xl mx-auto px-0 md:px-6 py-12 md:py-20">
-        <div className="flex items-center gap-4 mb-8 px-6 md:px-0">
-          <div className="h-px bg-gray-200 flex-1" />
-          <h3 className="font-serif text-xl md:text-2xl text-gray-400 italic">Reading Viewer</h3>
-          <div className="h-px bg-gray-200 flex-1" />
-        </div>
-        
-        <div className="bg-gray-50 md:bg-gray-100 md:rounded-[2rem] md:p-6 lg:p-8 md:shadow-inner border-y md:border border-gray-200">
-          <div className="h-[75vh] md:h-[85vh] w-full md:rounded-2xl overflow-hidden bg-white shadow-sm md:shadow-md relative">
-            {embedUrl ? (
-              <iframe 
-                src={embedUrl}
-                className="w-full h-full border-0 absolute inset-0"
-                allow="autoplay; fullscreen"
-                title={`Read ${book.titleEn}`}
-              />
-            ) : (
-              <div className="flex items-center justify-center h-full text-gray-500 font-serif px-6 text-center">
-                Preview not available. Please use the download button to read this book.
-              </div>
-            )}
-          </div>
         </div>
       </div>
     </div>

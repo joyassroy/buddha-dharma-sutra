@@ -16,6 +16,7 @@ export default function NewBook() {
     titleBn: "",
     author: "",
     description: "",
+    externalUrl: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -25,34 +26,28 @@ export default function NewBook() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: "pdf" | "cover") => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (type === "pdf") setPdfFile(file);
+    
+    // Cloudinary Free Tier Limit is 10MB
+    if (type === "pdf" && file.size > 10 * 1024 * 1024) {
+      toast.error("File is larger than 10MB. Please use the Google Drive Link option instead.");
+      e.target.value = "";
+      return;
+    }
+    
+    if (type === "pdf") {
+      setPdfFile(file);
+      setFormData({ ...formData, externalUrl: "" }); // Clear external URL if file is selected
+    }
     if (type === "cover") setCoverFile(file);
   };
 
-  const uploadToDrive = async (file: File) => {
-    const data = new FormData();
-    data.append("file", file);
-
-    const res = await fetch("/api/upload", {
-      method: "POST",
-      body: data,
-    });
-    
-    const result = await res.json();
-    if (!res.ok || !result.success) {
-      throw new Error(result.error || "Failed to upload to Google Drive");
-    }
-    
-    return result.url;
-  };
-
-  const uploadToCloudinary = async (file: File) => {
+  const uploadToCloudinary = async (file: File, resourceType: "image" | "raw" = "image") => {
     const data = new FormData();
     data.append("file", file);
     data.append("upload_preset", process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "");
     const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 
-    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`, {
       method: "POST",
       body: data,
     });
@@ -64,23 +59,27 @@ export default function NewBook() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!pdfFile) {
-      toast.error("Please select a PDF file to upload.");
+    if (!pdfFile && !formData.externalUrl) {
+      toast.error("Please select a PDF file or provide a Google Drive link.");
       return;
     }
 
     setLoading(true);
-    const loadingToast = toast.loading("Uploading PDF to Google Drive... This may take a minute.");
+    const loadingToast = toast.loading("Saving book... This may take a minute.");
 
     try {
-      // 1. Upload PDF to Google Drive
-      const pdfUrl = await uploadToDrive(pdfFile);
+      // 1. Get PDF URL (either uploaded or external)
+      let pdfUrl = formData.externalUrl;
+      if (pdfFile) {
+        toast.loading("Uploading PDF to Cloudinary...", { id: loadingToast });
+        pdfUrl = await uploadToCloudinary(pdfFile, "image");
+      }
       
       // 2. Upload Cover Image to Cloudinary (if provided)
       let coverUrl = "";
       if (coverFile) {
         toast.loading("Uploading cover image to Cloudinary...", { id: loadingToast });
-        coverUrl = await uploadToCloudinary(coverFile);
+        coverUrl = await uploadToCloudinary(coverFile, "image");
       }
 
       toast.loading("Saving book details to database...", { id: loadingToast });
@@ -98,7 +97,13 @@ export default function NewBook() {
         body: JSON.stringify(finalData),
       });
       
-      const data = await res.json();
+      let data;
+      try {
+        data = await res.json();
+      } catch (err) {
+        throw new Error("Server returned an invalid response (Request Entity Too Large).");
+      }
+
       if (data.success) {
         toast.success("Book saved successfully!", { id: loadingToast });
         router.push("/admin/books");
@@ -151,23 +156,38 @@ export default function NewBook() {
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Upload PDF File <span className="text-red-500">*</span></label>
-            <label className="relative flex items-center w-full px-4 py-3 rounded-xl border border-dashed border-gray-300 hover:border-primary hover:bg-primary/5 transition-all cursor-pointer">
-              <FileText size={20} className="text-gray-400 mr-3" />
-              <span className="flex-1 text-gray-600 truncate">
-                {pdfFile ? pdfFile.name : "Select PDF Document..."}
-              </span>
+        <div className="space-y-4">
+          <label className="text-sm font-medium text-gray-700 block border-b pb-2">PDF Document Source <span className="text-red-500">*</span></label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
+            <div className="space-y-2">
+              <label className="text-xs text-gray-500 uppercase font-bold tracking-wider">Option 1: Upload File (Max 10MB)</label>
+              <label className="relative flex items-center w-full px-4 py-3 rounded-xl border border-dashed border-gray-300 hover:border-primary hover:bg-primary/5 transition-all cursor-pointer">
+                <FileText size={20} className="text-gray-400 mr-3" />
+                <span className="flex-1 text-gray-600 truncate">
+                  {pdfFile ? pdfFile.name : "Select PDF Document..."}
+                </span>
+                <input 
+                  type="file" accept="application/pdf" className="hidden"
+                  onChange={(e) => handleFileChange(e, "pdf")}
+                />
+              </label>
+            </div>
+            
+            <div className="space-y-2">
+              <label className="text-xs text-gray-500 uppercase font-bold tracking-wider">Option 2: Google Drive Link</label>
               <input 
-                type="file" accept="application/pdf" className="hidden"
-                onChange={(e) => handleFileChange(e, "pdf")}
+                type="url" name="externalUrl" value={formData.externalUrl} onChange={handleChange}
+                disabled={!!pdfFile}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all disabled:opacity-50 disabled:bg-gray-50"
+                placeholder="https://drive.google.com/file/d/..."
               />
-            </label>
+            </div>
           </div>
+        </div>
           
+        <div className="grid grid-cols-1 gap-6">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Upload Cover Image (Optional)</label>
+            <label className="text-sm font-medium text-gray-700 block border-b pb-2">Book Cover</label>
             <label className="relative flex items-center w-full px-4 py-3 rounded-xl border border-dashed border-gray-300 hover:border-primary hover:bg-primary/5 transition-all cursor-pointer">
               <ImageIcon size={20} className="text-gray-400 mr-3" />
               <span className="flex-1 text-gray-600 truncate">
