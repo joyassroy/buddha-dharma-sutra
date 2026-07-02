@@ -1,23 +1,18 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import connectToDatabase from "@/lib/mongodb";
 import Comment from "@/models/Comment";
 import User from "@/models/User";
 
 export async function DELETE(req: Request, context: { params: Promise<{ id: string }> }) {
   try {
-    const session = await getServerSession();
-    if (!session?.user?.email) {
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    const session = await getServerSession(authOptions);
+    if (!session || (session.user as any).role !== "admin") {
+      return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
     }
 
     await connectToDatabase();
-    
-    // Check if admin
-    const user = await User.findOne({ email: session.user.email });
-    if (!user || user.role !== "admin") {
-      return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
-    }
 
     const { id } = await context.params;
     const deletedComment = await Comment.findByIdAndDelete(id);

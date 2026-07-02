@@ -9,8 +9,8 @@ import LibrarySearch from "@/components/LibrarySearch";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Dharma Library | Buddha Dharma Sutra",
-  description: "Explore our digital library of Buddhist books, translations, and guides.",
+  title: "Dharma Library",
+  description: "Explore our digital library of Buddhist books, Tripitaka translations, and meditation guides.",
 };
 
 async function getLibraryData() {

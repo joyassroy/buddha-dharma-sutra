@@ -7,9 +7,43 @@ import { ArrowLeft, Calendar, Quote, PenTool } from "lucide-react";
 import ReadingProgress from "@/components/ReadingProgress";
 import ShareButtons from "@/components/ShareButtons";
 import BlogInteractions from "@/components/BlogInteractions";
+import { Metadata } from "next";
 import { getServerSession } from "next-auth";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const blog = await getBlog(slug);
+
+  if (!blog) {
+    return {
+      title: "Blog Not Found",
+    };
+  }
+
+  const siteUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://buddha-dharma-sutra.vercel.app";
+  const ogImageUrl = blog.authorId?.image || `${siteUrl}/icon.png`;
+
+  return {
+    title: blog.titleEn,
+    description: blog.contentEn.substring(0, 160) + "...",
+    openGraph: {
+      title: blog.titleEn,
+      description: blog.contentEn.substring(0, 160) + "...",
+      type: "article",
+      url: `${siteUrl}/blog/${slug}`,
+      images: [
+        {
+          url: ogImageUrl,
+          width: 800,
+          height: 600,
+          alt: blog.titleEn,
+        },
+      ],
+    },
+  };
+}
 
 async function getBlog(slug: string) {
   await connectToDatabase();
@@ -36,8 +70,28 @@ export default async function BlogDetail({ params }: { params: Promise<{ slug: s
     if (user) userId = user._id.toString();
   }
 
+  const siteUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://buddha-dharma-sutra.vercel.app";
+  
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": blog.titleEn,
+    "description": blog.contentEn.substring(0, 160) + "...",
+    "author": {
+      "@type": "Person",
+      "name": blog.authorId?.name || "Anonymous",
+    },
+    "datePublished": new Date(blog.createdAt).toISOString(),
+    "dateModified": new Date(blog.updatedAt || blog.createdAt).toISOString(),
+    "url": `${siteUrl}/blog/${slug}`,
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <ReadingProgress />
       <div className="bg-gray-50 min-h-screen pb-24 relative overflow-hidden">
         

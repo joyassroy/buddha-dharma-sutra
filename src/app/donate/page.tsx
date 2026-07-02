@@ -7,6 +7,11 @@ import DonateButton from "@/components/DonateButton";
 
 export const dynamic = "force-dynamic";
 
+export const metadata = {
+  title: "Donate & Support",
+  description: "Support Buddha Dharma Sutra to help preserve the sacred teachings and keep our digital library ad-free.",
+};
+
 async function getDonors() {
   await connectToDatabase();
   const donors = await Donor.find({}).sort({ createdAt: -1 });

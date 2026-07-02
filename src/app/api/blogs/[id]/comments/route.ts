@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import connectToDatabase from "@/lib/mongodb";
 import Comment from "@/models/Comment";
 import User from "@/models/User";
@@ -29,7 +30,7 @@ export async function GET(req: Request, context: { params: Promise<{ id: string 
 // POST a new comment
 export async function POST(req: Request, context: { params: Promise<{ id: string }> }) {
   try {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }

@@ -7,7 +7,7 @@ import SutraSearch from "@/components/SutraSearch";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Sacred Sutras | Buddha Dharma Sutra",
+  title: "Sacred Sutras",
   description: "Read and explore the sacred teachings of the Buddha in English and Bengali.",
 };
 

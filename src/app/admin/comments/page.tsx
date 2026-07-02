@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { MessageCircle, Trash2, ShieldAlert, ShieldCheck } from "lucide-react";
+import { MessageCircle, Trash2, ShieldAlert, ShieldCheck, Search } from "lucide-react";
 import toast from "react-hot-toast";
 
 interface Author {
@@ -29,6 +29,7 @@ interface Comment {
 export default function AdminComments() {
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     fetchComments();
@@ -97,12 +98,34 @@ export default function AdminComments() {
     }
   };
 
+  const filteredComments = comments.filter((comment) => {
+    const term = searchTerm.toLowerCase();
+    return (
+      comment.authorId.name.toLowerCase().includes(term) ||
+      comment.authorId.email.toLowerCase().includes(term) ||
+      comment.content.toLowerCase().includes(term)
+    );
+  });
+
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Comments Moderation</h1>
           <p className="text-gray-500 text-sm mt-1">Manage user responses and restrict abusive users.</p>
+        </div>
+        
+        <div className="relative w-full md:w-72">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Search size={18} className="text-gray-400" />
+          </div>
+          <input
+            type="text"
+            placeholder="Search user, email or comment..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 pr-4 py-2 w-full border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+          />
         </div>
       </div>
 
@@ -112,6 +135,11 @@ export default function AdminComments() {
         <div className="text-center py-12 bg-white rounded-xl shadow-sm border border-gray-100 border-dashed">
           <MessageCircle size={48} className="mx-auto text-gray-300 mb-4" />
           <p className="text-gray-500">No comments found across the site.</p>
+        </div>
+      ) : filteredComments.length === 0 ? (
+        <div className="text-center py-12 bg-white rounded-xl shadow-sm border border-gray-100 border-dashed">
+          <Search size={48} className="mx-auto text-gray-300 mb-4" />
+          <p className="text-gray-500">No comments found matching "{searchTerm}".</p>
         </div>
       ) : (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -127,7 +155,7 @@ export default function AdminComments() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {comments.map((comment) => (
+                {filteredComments.map((comment) => (
                   <tr key={comment._id} className="hover:bg-gray-50/50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">

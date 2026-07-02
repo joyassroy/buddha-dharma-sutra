@@ -18,9 +18,53 @@ const lora = Lora({
   weight: ["400", "500", "600", "700"],
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://buddha-dharma-sutra.vercel.app";
+
 export const metadata: Metadata = {
-  title: "Buddha Dharma Sutra | A Digital Sanctuary",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "Buddha Dharma Sutra | A Digital Sanctuary",
+    template: "%s | Buddha Dharma Sutra",
+  },
   description: "Explore the profound teachings of the Buddha, read sacred sutras, and access a vast library of Dhamma books.",
+  keywords: ["Buddha", "Dharma", "Sutra", "Buddhist", "Tripitaka", "Dhamma", "Meditation", "Buddhist Library", "Bangladesh"],
+  openGraph: {
+    title: "Buddha Dharma Sutra",
+    description: "A digital sanctuary for Buddhist teachings, sutras, and literature.",
+    url: siteUrl,
+    siteName: "Buddha Dharma Sutra",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Buddha Dharma Sutra",
+    description: "A digital sanctuary for Buddhist teachings, sutras, and literature.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Buddha Dharma Sutra",
+  "url": siteUrl,
+  "description": "Explore the profound teachings of the Buddha, read sacred sutras, and access a vast library of Dhamma books.",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": `${siteUrl}/library?search={search_term_string}`,
+    "query-input": "required name=search_term_string"
+  }
 };
 
 export default function RootLayout({
@@ -33,6 +77,12 @@ export default function RootLayout({
       lang="en"
       className={`${outfit.variable} ${lora.variable} font-sans h-full antialiased`}
     >
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className="h-full">
         <Providers>
           <Toaster 

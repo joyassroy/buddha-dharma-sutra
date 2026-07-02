@@ -2,8 +2,8 @@ import Link from "next/link";
 import { Globe } from "lucide-react";
 
 export const metadata = {
-  title: "About Us | Buddha Dharma Sutra",
-  description: "Learn more about the creator behind Buddha Dharma Sutra.",
+  title: "About Us",
+  description: "Learn more about the creator behind Buddha Dharma Sutra and our mission to digitize the Dhamma.",
 };
 
 export default function AboutPage() {
