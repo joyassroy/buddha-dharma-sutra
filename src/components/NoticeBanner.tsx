@@ -83,6 +83,7 @@ export default function NoticeBanner() {
                 href={notice.link}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Learn more about this notice"
                 className="flex items-center justify-center px-4 py-2 border border-transparent rounded-full shadow-sm text-sm font-bold text-[color:var(--tw-gradient-from)] bg-white hover:bg-gray-50 transition-colors"
                 style={{ color: notice.urgency === "info" ? "#2563eb" : notice.urgency === "warning" ? "#d97706" : "#dc2626" }}
               >
@@ -120,20 +121,9 @@ export default function NoticeBanner() {
           }}
           className="w-full relative z-50"
         >
-          {/* Constant subtle bounce to grab attention until dismissed */}
-          <motion.div
-            animate={{
-              y: [0, -5, 0],
-            }}
-            transition={{
-              duration: 2,
-              ease: "easeInOut",
-              repeat: Infinity,
-              repeatType: "reverse",
-            }}
-          >
+          <div className="w-full relative z-50 animate-float" style={{ animationDuration: '3s' }}>
             {Content}
-          </motion.div>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>

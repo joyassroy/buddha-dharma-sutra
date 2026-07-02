@@ -22,6 +22,7 @@ export default function QuotesSection() {
               src="/buddha-quote-1.png"
               alt="Serene Buddha Statue in Garden"
               fill
+              sizes="(max-width: 768px) 100vw, 50vw"
               className="object-cover hover:scale-105 transition-transform duration-700"
             />
             {/* Overlay Gradient */}
@@ -38,7 +39,7 @@ export default function QuotesSection() {
           className="flex-1 relative"
         >
           <div className="absolute -top-12 -left-8 text-primary/10">
-            <Quote size={120} fill="currentColor" />
+            <Quote size={120} fill="currentColor" aria-hidden="true" />
           </div>
           
           <div className="relative z-10 bg-white/60 dark:bg-foreground/5 backdrop-blur-xl p-10 md:p-12 rounded-[2rem] border border-white dark:border-primary/20 shadow-xl shadow-primary/5">

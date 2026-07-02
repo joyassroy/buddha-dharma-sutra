@@ -69,19 +69,15 @@ export default function OpenBookLayout({ children }: { children: ReactNode }) {
               />
             </div>
             {/* Floating Badge */}
-            <motion.div
-              animate={{ y: [0, -10, 0] }}
-              transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-              className="absolute -bottom-6 -left-6 bg-white p-4 rounded-2xl shadow-xl flex items-center gap-3 border border-primary/10"
-            >
+            <div className="absolute -bottom-6 -left-6 bg-white p-4 rounded-2xl shadow-xl flex items-center gap-3 border border-primary/10 animate-float">
               <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center text-accent">
-                <BookOpen size={20} />
+                <BookOpen size={20} aria-hidden="true" />
               </div>
               <div>
                 <p className="text-xs text-foreground/60 font-semibold uppercase tracking-wider">Collection</p>
                 <p className="font-bold text-foreground font-serif">10,000+ Sutras</p>
               </div>
-            </motion.div>
+            </div>
           </motion.div>
         </div>
 
@@ -138,23 +134,25 @@ function WisdomCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7, delay, ease: "easeOut" }}
       whileHover={{ y: -10 }}
+      role="button"
+      tabIndex={0}
+      aria-label={`Wisdom quote: ${quote}`}
       className="group relative aspect-[3/4] rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 cursor-pointer"
     >
-      <img
+      <Image
         src={imageSrc}
-        alt="Buddha Wisdom"
-        className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
-        onError={(e) => {
-          e.currentTarget.src = fallbackImg;
-        }}
+        alt="Buddha Wisdom Background"
+        fill
+        sizes="(max-width: 768px) 100vw, 33vw"
+        className="object-cover transform group-hover:scale-110 transition-transform duration-700"
       />
       {/* Dark Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none" />
 
       {/* Content */}
-      <div className="absolute inset-0 flex flex-col justify-end p-8">
+      <div className="absolute inset-0 flex flex-col justify-end p-8 pointer-events-none">
         <div className="w-8 h-8 mb-4 opacity-50">
-          <svg viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+          <svg viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path d="M14.017 21L16.411 14.182C17.399 11.235 17.5 9.424 16.5 8.125C15.5 6.825 13 7.375 13 7.375C13 7.375 14.5 4.5 17.5 4.5C20.5 4.5 22.5 7.5 22.5 11C22.5 14.5 20.003 18.23 18.5 21H14.017ZM5.017 21L7.411 14.182C8.399 11.235 8.5 9.424 7.5 8.125C6.5 6.825 4 7.375 4 7.375C4 7.375 5.5 4.5 8.5 4.5C11.5 4.5 13.5 7.5 13.5 11C13.5 14.5 11.003 18.23 9.5 21H5.017Z" />
           </svg>
         </div>
