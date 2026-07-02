@@ -1,25 +1,78 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Save, UploadCloud, Image as ImageIcon, FileText } from "lucide-react";
 import toast from "react-hot-toast";
 
+type Category = {
+  _id: string;
+  name: string;
+};
+
 export default function NewBook() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const editId = searchParams.get("id");
+  const isEditing = !!editId;
+
   const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [coverFile, setCoverFile] = useState<File | null>(null);
+  
   const [formData, setFormData] = useState({
     titleEn: "",
     titleBn: "",
     author: "",
     description: "",
     externalUrl: "",
+    category: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  useEffect(() => {
+    fetchCategories();
+    if (isEditing) {
+      fetchBookToEdit();
+    }
+  }, [isEditing]);
+
+  const fetchCategories = async () => {
+    try {
+      const res = await fetch("/api/categories");
+      const data = await res.json();
+      if (data.success) {
+        setCategories(data.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch categories");
+    }
+  };
+
+  const fetchBookToEdit = async () => {
+    try {
+      const res = await fetch("/api/books");
+      const data = await res.json();
+      if (data.success) {
+        const book = data.data.find((b: any) => b._id === editId);
+        if (book) {
+          setFormData({
+            titleEn: book.titleEn,
+            titleBn: book.titleBn || "",
+            author: book.author,
+            description: book.description || "",
+            externalUrl: book.fileUrl.startsWith("http") ? book.fileUrl : "",
+            category: book.category?._id || book.category || "",
+          });
+        }
+      }
+    } catch (error) {
+      toast.error("Failed to fetch book data");
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -59,16 +112,16 @@ export default function NewBook() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!pdfFile && !formData.externalUrl) {
+    if (!isEditing && !pdfFile && !formData.externalUrl) {
       toast.error("Please select a PDF file or provide a Google Drive link.");
       return;
     }
 
     setLoading(true);
-    const loadingToast = toast.loading("Saving book... This may take a minute.");
+    const loadingToast = toast.loading(isEditing ? "Updating book..." : "Saving book...");
 
     try {
-      // 1. Get PDF URL (either uploaded or external)
+      // 1. Get PDF URL (either uploaded or external, or keep existing if editing and no new file)
       let pdfUrl = formData.externalUrl;
       if (pdfFile) {
         toast.loading("Uploading PDF to Cloudinary...", { id: loadingToast });
@@ -76,7 +129,7 @@ export default function NewBook() {
       }
       
       // 2. Upload Cover Image to Cloudinary (if provided)
-      let coverUrl = "";
+      let coverUrl = undefined;
       if (coverFile) {
         toast.loading("Uploading cover image to Cloudinary...", { id: loadingToast });
         coverUrl = await uploadToCloudinary(coverFile, "image");
@@ -85,14 +138,27 @@ export default function NewBook() {
       toast.loading("Saving book details to database...", { id: loadingToast });
 
       // 3. Save to database
-      const finalData = {
+      const finalData: any = {
         ...formData,
-        fileUrl: pdfUrl,
-        coverImage: coverUrl,
       };
+      
+      // Only attach category if it was selected
+      if (!finalData.category) delete finalData.category;
+      
+      // For new books or if a file was explicitly changed, update fileUrl
+      if (pdfUrl || formData.externalUrl || !isEditing) {
+        finalData.fileUrl = pdfUrl || formData.externalUrl;
+      }
+      
+      if (coverUrl) {
+        finalData.coverImage = coverUrl;
+      }
 
-      const res = await fetch("/api/books", {
-        method: "POST",
+      const url = isEditing ? `/api/books/${editId}` : "/api/books";
+      const method = isEditing ? "PUT" : "POST";
+
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(finalData),
       });
@@ -101,11 +167,11 @@ export default function NewBook() {
       try {
         data = await res.json();
       } catch (err) {
-        throw new Error("Server returned an invalid response (Request Entity Too Large).");
+        throw new Error("Server returned an invalid response.");
       }
 
       if (data.success) {
-        toast.success("Book saved successfully!", { id: loadingToast });
+        toast.success(isEditing ? "Book updated!" : "Book saved successfully!", { id: loadingToast });
         router.push("/admin/books");
       } else {
         toast.error("Failed to save book: " + data.error, { id: loadingToast });
@@ -123,7 +189,9 @@ export default function NewBook() {
         <Link href="/admin/books" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
           <ArrowLeft size={24} className="text-gray-600" />
         </Link>
-        <h1 className="text-3xl font-bold text-gray-800 font-serif">Add New Book (Direct Upload)</h1>
+        <h1 className="text-3xl font-bold text-gray-800 font-serif">
+          {isEditing ? "Edit Book" : "Add New Book"}
+        </h1>
       </div>
 
       <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 space-y-6">
@@ -147,24 +215,40 @@ export default function NewBook() {
           </div>
         </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">Author <span className="text-red-500">*</span></label>
-          <input 
-            required type="text" name="author" value={formData.author} onChange={handleChange}
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-            placeholder="e.g. Buddhaghosa"
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">Author <span className="text-red-500">*</span></label>
+            <input 
+              required type="text" name="author" value={formData.author} onChange={handleChange}
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+              placeholder="e.g. Buddhaghosa"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">Category</label>
+            <select 
+              name="category" value={formData.category} onChange={handleChange}
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+            >
+              <option value="">Uncategorized</option>
+              {categories.map((c) => (
+                <option key={c._id} value={c._id}>{c.name}</option>
+              ))}
+            </select>
+          </div>
         </div>
 
         <div className="space-y-4">
-          <label className="text-sm font-medium text-gray-700 block border-b pb-2">PDF Document Source <span className="text-red-500">*</span></label>
+          <label className="text-sm font-medium text-gray-700 block border-b pb-2">
+            PDF Document Source {!isEditing && <span className="text-red-500">*</span>}
+          </label>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
             <div className="space-y-2">
               <label className="text-xs text-gray-500 uppercase font-bold tracking-wider">Option 1: Upload File (Max 10MB)</label>
               <label className="relative flex items-center w-full px-4 py-3 rounded-xl border border-dashed border-gray-300 hover:border-primary hover:bg-primary/5 transition-all cursor-pointer">
                 <FileText size={20} className="text-gray-400 mr-3" />
                 <span className="flex-1 text-gray-600 truncate">
-                  {pdfFile ? pdfFile.name : "Select PDF Document..."}
+                  {pdfFile ? pdfFile.name : (isEditing ? "Leave blank to keep existing" : "Select PDF Document...")}
                 </span>
                 <input 
                   type="file" accept="application/pdf" className="hidden"
@@ -187,11 +271,11 @@ export default function NewBook() {
           
         <div className="grid grid-cols-1 gap-6">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700 block border-b pb-2">Book Cover</label>
+            <label className="text-sm font-medium text-gray-700 block border-b pb-2">Book Cover (Optional)</label>
             <label className="relative flex items-center w-full px-4 py-3 rounded-xl border border-dashed border-gray-300 hover:border-primary hover:bg-primary/5 transition-all cursor-pointer">
               <ImageIcon size={20} className="text-gray-400 mr-3" />
               <span className="flex-1 text-gray-600 truncate">
-                {coverFile ? coverFile.name : "Select Cover Image..."}
+                {coverFile ? coverFile.name : (isEditing ? "Leave blank to keep existing" : "Select Cover Image...")}
               </span>
               <input 
                 type="file" accept="image/*" className="hidden"
@@ -216,7 +300,7 @@ export default function NewBook() {
             className="bg-primary text-white px-8 py-3 rounded-xl font-medium flex items-center gap-2 hover:bg-emerald-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? <UploadCloud size={20} className="animate-bounce" /> : <Save size={20} />}
-            {loading ? "Uploading & Saving..." : "Save Book"}
+            {loading ? "Saving..." : isEditing ? "Update Book" : "Save Book"}
           </button>
         </div>
 

@@ -1,5 +1,6 @@
 import connectToDatabase from "@/lib/mongodb";
 import Book from "@/models/Book";
+import Category from "@/models/Category";
 import Link from "next/link";
 import { ArrowRight, Library as LibraryIcon } from "lucide-react";
 
@@ -12,14 +13,19 @@ export const metadata = {
   description: "Explore our digital library of Buddhist books, translations, and guides.",
 };
 
-async function getBooks() {
+async function getLibraryData() {
   await connectToDatabase();
-  const books = await Book.find({}).sort({ createdAt: -1 });
-  return JSON.parse(JSON.stringify(books));
+  const categories = await Category.find({}).sort({ order: 1 });
+  const books = await Book.find({}).populate("category").sort({ order: 1, createdAt: -1 });
+  
+  return {
+    categories: JSON.parse(JSON.stringify(categories)),
+    books: JSON.parse(JSON.stringify(books))
+  };
 }
 
 export default async function LibraryPage() {
-  const books = await getBooks();
+  const { categories, books } = await getLibraryData();
 
   return (
     <div className="min-h-screen bg-white">
@@ -35,7 +41,7 @@ export default async function LibraryPage() {
       </div>
 
       {/* Fuzzy Search & Library Grid */}
-      <LibrarySearch initialBooks={books} />
+      <LibrarySearch initialBooks={books} categories={categories} />
     </div>
   );
 }

@@ -8,6 +8,8 @@ export interface IBook extends Document {
   coverImage?: string;
   fileUrl: string;
   slug: string;
+  category?: mongoose.Types.ObjectId;
+  order: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -21,6 +23,8 @@ const BookSchema: Schema = new Schema(
     coverImage: { type: String, default: "" },
     fileUrl: { type: String, required: true },
     slug: { type: String, required: true, unique: true },
+    category: { type: Schema.Types.ObjectId, ref: "Category" },
+    order: { type: Number, default: 0 },
   },
   {
     timestamps: true,

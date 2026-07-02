@@ -14,7 +14,9 @@ import {
   Heart,
   Wallet,
   Menu,
-  X
+  X,
+  Bell,
+  Tags
 } from "lucide-react";
 
 export default function AdminLayout({
@@ -27,6 +29,8 @@ export default function AdminLayout({
 
   const navigation = [
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
+    { name: "Notices", href: "/admin/notices", icon: Bell },
+    { name: "Categories", href: "/admin/categories", icon: Tags },
     { name: "Sutras", href: "/admin/sutras", icon: BookOpen },
     { name: "Blogs", href: "/admin/blogs", icon: FileText },
     { name: "Books", href: "/admin/books", icon: Library },
