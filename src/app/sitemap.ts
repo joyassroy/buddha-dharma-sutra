@@ -3,7 +3,7 @@ import connectToDatabase from '@/lib/mongodb';
 import Blog from '@/models/Blog';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://buddha-dharma-sutra.vercel.app';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://buddha-dharma-sutra.app';
 
   // Define static routes
   const staticRoutes = [

@@ -18,7 +18,7 @@ const lora = Lora({
   weight: ["400", "500", "600", "700"],
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://buddha-dharma-sutra.vercel.app";
+const siteUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://buddha-dharma-sutra.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

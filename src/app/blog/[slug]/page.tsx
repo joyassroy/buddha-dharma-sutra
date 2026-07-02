@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     };
   }
 
-  const siteUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://buddha-dharma-sutra.vercel.app";
+  const siteUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://buddha-dharma-sutra.app";
   const ogImageUrl = blog.authorId?.image || `${siteUrl}/icon.png`;
 
   return {
@@ -70,7 +70,7 @@ export default async function BlogDetail({ params }: { params: Promise<{ slug: s
     if (user) userId = user._id.toString();
   }
 
-  const siteUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://buddha-dharma-sutra.vercel.app";
+  const siteUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://buddha-dharma-sutra.app";
   
   const jsonLd = {
     "@context": "https://schema.org",
