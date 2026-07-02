@@ -2,7 +2,8 @@ import connectToDatabase from "@/lib/mongodb";
 import Book from "@/models/Book";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, BookOpen, Download, Library as LibraryIcon } from "lucide-react";
+import { ArrowLeft, BookOpen, Library as LibraryIcon } from "lucide-react";
+import BookAccessManager from "@/components/BookAccessManager";
 
 async function getBook(slug: string) {
   await connectToDatabase();
@@ -100,26 +101,7 @@ export default async function BookDetail({ params }: { params: Promise<{ slug: s
               </p>
             )}
 
-            <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4 w-full">
-              <a 
-                href={book.fileUrl} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="w-full sm:w-auto inline-flex justify-center items-center gap-2 bg-primary text-white px-6 py-3 rounded-full font-bold hover:bg-emerald-700 transition-colors shadow-lg shadow-primary/20"
-              >
-                <Download size={18} />
-                Download PDF
-              </a>
-              <a 
-                href={embedUrl}
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="w-full sm:w-auto inline-flex justify-center items-center gap-2 bg-white text-gray-800 px-6 py-3 rounded-full font-bold hover:bg-gray-50 transition-colors shadow-sm border border-gray-200"
-              >
-                <BookOpen size={18} />
-                Read Online
-              </a>
-            </div>
+            <BookAccessManager fileUrl={book.fileUrl} embedUrl={embedUrl} />
           </div>
 
         </div>

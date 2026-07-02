@@ -17,7 +17,8 @@ import {
   X,
   Bell,
   Tags,
-  MessageCircle
+  MessageCircle,
+  Users
 } from "lucide-react";
 
 export default function AdminLayout({
@@ -30,6 +31,7 @@ export default function AdminLayout({
 
   const navigation = [
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
+    { name: "Users", href: "/admin/users", icon: Users },
     { name: "Notices", href: "/admin/notices", icon: Bell },
     { name: "Categories", href: "/admin/categories", icon: Tags },
     { name: "Sutras", href: "/admin/sutras", icon: BookOpen },

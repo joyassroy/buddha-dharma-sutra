@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -16,22 +15,12 @@ export default function OpenBookLayout({ children }: { children: ReactNode }) {
         <div className="absolute bottom-[-20%] right-[-10%] w-[70%] h-[70%] rounded-full bg-gradient-to-tl from-[#6EE7B7]/40 to-transparent blur-[140px]" />
         <div className="absolute top-[40%] right-[20%] w-[40%] h-[40%] rounded-full bg-[#FDE68A]/30 blur-[120px]" />
       </div>
-
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 30 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-        className="max-w-5xl w-full pt-10"
-      >
+      <div className="max-w-5xl w-full pt-10 animate-fade-in-up opacity-0">
         <div className="flex flex-col md:flex-row items-center justify-between gap-12 mb-16">
 
           {/* Text Content */}
           <div className="text-center md:text-left flex-1">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
+            <div className="animate-fade-in-right opacity-0 delay-200">
               <h1 className="text-5xl md:text-7xl font-serif font-bold text-foreground mb-6 leading-tight tracking-tight">
                 Awaken Your <br className="hidden md:block" />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">Inner Peace</span>
@@ -49,16 +38,11 @@ export default function OpenBookLayout({ children }: { children: ReactNode }) {
                   Our Mission
                 </Link>
               </div>
-            </motion.div>
+            </div>
           </div>
 
           {/* Premium Hero Image */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, delay: 0.3 }}
-            className="flex-1 relative w-full max-w-sm"
-          >
+          <div className="flex-1 relative w-full max-w-sm animate-zoom-in opacity-0 delay-300">
             <div className="relative aspect-square w-full rounded-[2.5rem] overflow-hidden shadow-2xl shadow-primary/20 border-4 border-white/50 backdrop-blur-sm">
               <Image
                 src="/hero-image.png"
@@ -66,6 +50,7 @@ export default function OpenBookLayout({ children }: { children: ReactNode }) {
                 fill
                 className="object-cover"
                 priority
+                fetchPriority="high"
               />
             </div>
             {/* Floating Badge */}
@@ -78,7 +63,7 @@ export default function OpenBookLayout({ children }: { children: ReactNode }) {
                 <p className="font-bold text-foreground font-serif">10,000+ Sutras</p>
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
 
         {/* Wisdom Gallery Section */}
@@ -112,7 +97,7 @@ export default function OpenBookLayout({ children }: { children: ReactNode }) {
 
         {/* Buddha Quotes Section */}
         <QuotesSection />
-      </motion.div>
+      </div>
     </div>
   );
 }
@@ -128,16 +113,13 @@ function WisdomCard({
   quote: string;
   delay: number;
 }) {
+  const delayClass = delay === 0.4 ? 'delay-400' : delay === 0.5 ? 'delay-500' : 'delay-600';
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.7, delay, ease: "easeOut" }}
-      whileHover={{ y: -10 }}
+    <div
       role="button"
       tabIndex={0}
       aria-label={`Wisdom quote: ${quote}`}
-      className="group relative aspect-[3/4] rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 cursor-pointer"
+      className={`group relative aspect-[3/4] rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 cursor-pointer animate-fade-in-up opacity-0 ${delayClass}`}
     >
       <Image
         src={imageSrc}
@@ -160,6 +142,6 @@ function WisdomCard({
           {quote}
         </p>
       </div>
-    </motion.div>
+    </div>
   );
 }

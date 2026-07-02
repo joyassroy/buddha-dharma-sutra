@@ -57,7 +57,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* Logo & Flag */}
-          <Link href="/" className="flex items-center gap-3 outline-none">
+          <Link href="/" className="flex items-center gap-3 outline-none" aria-label="Home">
             <BuddhistFlag />
             <div className="w-10 h-10 relative flex-shrink-0 bg-white rounded-full p-1 shadow-sm border border-primary/10">
               <Image src="/logo.png" alt="Buddha Dharma Sutra Logo" fill className="object-contain p-1" sizes="40px" />
@@ -83,8 +83,8 @@ export default function Navbar() {
 
           {/* Actions (Lang & Auth) */}
           <div className="hidden md:flex items-center gap-4">
-            <button className="flex items-center gap-1 text-foreground/80 hover:text-primary transition-colors p-2 rounded-full hover:bg-primary/5">
-              <Globe size={20} />
+            <button className="flex items-center gap-1 text-foreground/80 hover:text-primary transition-colors p-2 rounded-full hover:bg-primary/5" aria-label="Switch Language">
+              <Globe size={20} aria-hidden="true" />
               <span className="text-sm font-medium">EN</span>
             </button>
             
@@ -93,6 +93,8 @@ export default function Navbar() {
                 <button 
                   onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                   className="flex items-center gap-2 p-1 pr-3 rounded-full border border-gray-200 hover:border-primary/50 transition-all bg-white shadow-sm"
+                  aria-label="User Profile Menu"
+                  aria-expanded={profileDropdownOpen}
                 >
                   {session.user?.image ? (
                     <img src={session.user.image} alt="Profile" className="w-8 h-8 rounded-full" />
@@ -119,15 +121,16 @@ export default function Navbar() {
                       className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors"
                       onClick={() => setProfileDropdownOpen(false)}
                     >
-                      <LayoutDashboard size={16} />
+                      <LayoutDashboard size={16} aria-hidden="true" />
                       Dashboard
                     </Link>
                     
                     <button 
                       onClick={() => signOut({ callbackUrl: "/" })}
                       className="flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 w-full text-left transition-colors"
+                      aria-label="Sign Out"
                     >
-                      <LogOut size={16} />
+                      <LogOut size={16} aria-hidden="true" />
                       Sign Out
                     </button>
                   </div>
@@ -135,7 +138,7 @@ export default function Navbar() {
               </div>
             ) : (
               <Link href="/login" className="flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-full font-medium hover:bg-primary/90 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
-                <User size={18} />
+                <User size={18} aria-hidden="true" />
                 Sign In
               </Link>
             )}
@@ -146,8 +149,10 @@ export default function Navbar() {
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="text-foreground/80 p-2 hover:bg-primary/10 rounded-full transition-colors"
+              aria-label="Toggle mobile menu"
+              aria-expanded={mobileMenuOpen}
             >
-              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              {mobileMenuOpen ? <X size={24} aria-hidden="true" /> : <Menu size={24} aria-hidden="true" />}
             </button>
           </div>
         </div>
@@ -173,8 +178,8 @@ export default function Navbar() {
               </Link>
             ))}
             <div className="pt-4 border-t border-primary/10 flex flex-col gap-4">
-              <button className="flex items-center gap-2 px-3 py-2 text-foreground/80 hover:text-primary mb-4">
-                <Globe size={20} />
+              <button className="flex items-center gap-2 px-3 py-2 text-foreground/80 hover:text-primary mb-4" aria-label="Switch Language (BN)">
+                <Globe size={20} aria-hidden="true" />
                 Switch Language (BN)
               </button>
               
@@ -200,21 +205,22 @@ export default function Navbar() {
                       className="flex items-center justify-center gap-2 bg-white text-primary w-full px-5 py-3 rounded-xl border border-primary/20 font-medium shadow-sm"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <LayoutDashboard size={18} />
+                      <LayoutDashboard size={18} aria-hidden="true" />
                       Dashboard
                     </Link>
                     <button 
                       onClick={() => signOut({ callbackUrl: "/" })}
                       className="flex items-center justify-center gap-2 bg-red-50 text-red-600 w-full px-5 py-3 rounded-xl font-medium shadow-sm"
+                      aria-label="Sign Out"
                     >
-                      <LogOut size={18} />
+                      <LogOut size={18} aria-hidden="true" />
                       Sign Out
                     </button>
                   </div>
                 </div>
               ) : (
                 <Link href="/login" className="flex items-center justify-center gap-2 bg-primary text-white w-full px-5 py-3 rounded-full font-medium shadow-md">
-                  <User size={18} />
+                  <User size={18} aria-hidden="true" />
                   Sign In
                 </Link>
               )}

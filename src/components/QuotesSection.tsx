@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+
 import Image from "next/image";
 import { Quote } from "lucide-react";
 
@@ -10,13 +10,7 @@ export default function QuotesSection() {
       <div className="flex flex-col lg:flex-row items-center gap-16">
         
         {/* Image Section */}
-        <motion.div
-          initial={{ opacity: 0, x: -40 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 1, ease: "easeOut" }}
-          className="flex-1 w-full"
-        >
+        <div className="flex-1 w-full animate-fade-in-right opacity-0 delay-200">
           <div className="relative aspect-[4/5] w-full max-w-md mx-auto rounded-[2rem] overflow-hidden shadow-2xl shadow-primary/20 border-8 border-white/60 backdrop-blur-sm">
             <Image
               src="/buddha-quote-1.png"
@@ -28,16 +22,10 @@ export default function QuotesSection() {
             {/* Overlay Gradient */}
             <div className="absolute inset-0 bg-gradient-to-t from-[#043927]/60 via-transparent to-transparent opacity-80" />
           </div>
-        </motion.div>
+        </div>
 
         {/* Text / Quote Section */}
-        <motion.div
-          initial={{ opacity: 0, x: 40 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
-          className="flex-1 relative"
-        >
+        <div className="flex-1 relative animate-fade-in-left opacity-0 delay-400">
           <div className="absolute -top-12 -left-8 text-primary/10">
             <Quote size={120} fill="currentColor" aria-hidden="true" />
           </div>
@@ -57,7 +45,7 @@ export default function QuotesSection() {
               </p>
             </div>
           </div>
-        </motion.div>
+        </div>
         
       </div>
     </section>
