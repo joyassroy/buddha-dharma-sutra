@@ -16,7 +16,8 @@ import {
   Menu,
   X,
   Bell,
-  Tags
+  Tags,
+  MessageCircle
 } from "lucide-react";
 
 export default function AdminLayout({
@@ -33,6 +34,7 @@ export default function AdminLayout({
     { name: "Categories", href: "/admin/categories", icon: Tags },
     { name: "Sutras", href: "/admin/sutras", icon: BookOpen },
     { name: "Blogs", href: "/admin/blogs", icon: FileText },
+    { name: "Comments", href: "/admin/comments", icon: MessageCircle },
     { name: "Books", href: "/admin/books", icon: Library },
     { name: "Donors", href: "/admin/donors", icon: Heart },
     { name: "Requests", href: "/admin/donations", icon: Wallet },

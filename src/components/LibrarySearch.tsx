@@ -121,7 +121,7 @@ export default function LibrarySearch({
     <Link href={`/library/${book.slug}`} className="group block">
       <div className="relative aspect-[3/4] mb-6 rounded-lg overflow-hidden bg-gray-100 shadow-[0_20px_40px_rgba(0,0,0,0.08)] group-hover:shadow-[0_20px_50px_rgba(5,150,105,0.15)] transition-all duration-500 group-hover:-translate-y-2">
         {book.coverImage ? (
-          <img src={book.coverImage} alt={book.titleEn} className="w-full h-full object-cover" />
+          <img src={book.coverImage} alt={book.titleEn} className="w-full h-full object-contain p-4 bg-white" />
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/10 p-6 text-center">
             <LibraryIcon size={48} className="text-primary/20 mb-4" />
@@ -150,6 +150,67 @@ export default function LibrarySearch({
       </div>
     </Link>
   );
+
+  const CategoryGroup = ({ group }: { group: { categoryName: string; books: BookType[] } }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+    
+    // Determine how many books to show. Default to 3, but if searching/filtering, show all automatically?
+    // Actually, always truncating to 3 (desktop) or 2 (mobile) is nice, but keeping it simple at 3 is good.
+    const hasSearchActive = query.length > 0 || selectedCategory !== "all";
+    const limit = 3;
+    
+    // Automatically expand if user is actively searching
+    const expanded = isExpanded || hasSearchActive;
+    const showMoreButton = !expanded && group.books.length > limit;
+    
+    const displayedBooks = expanded ? group.books : group.books.slice(0, limit);
+
+    return (
+      <div className="scroll-mt-24">
+        <div className="flex items-center gap-4 mb-8">
+          <h2 className="text-3xl font-serif font-bold text-gray-900">{group.categoryName}</h2>
+          <div className="h-px bg-gray-200 flex-1 mt-2"></div>
+          <span className="text-sm font-medium text-gray-400 bg-gray-50 px-3 py-1 rounded-full">
+            {group.books.length} {group.books.length === 1 ? 'Book' : 'Books'}
+          </span>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-12 transition-all">
+          {displayedBooks.map((book) => (
+            <BookCard key={book._id} book={book} />
+          ))}
+        </div>
+
+        {showMoreButton && (
+          <div className="mt-12 flex justify-center relative">
+            <div className="absolute inset-0 flex items-center" aria-hidden="true">
+              <div className="w-full border-t border-gray-100 border-dashed"></div>
+            </div>
+            <button
+              onClick={() => setIsExpanded(true)}
+              className="relative bg-white px-8 py-3 rounded-full border border-gray-200 text-gray-600 font-medium hover:text-primary hover:border-primary/50 hover:bg-primary/5 transition-all shadow-sm flex items-center gap-2 group"
+            >
+              Extend More
+              <span className="bg-gray-100 text-gray-500 text-xs px-2 py-0.5 rounded-full group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                +{group.books.length - limit}
+              </span>
+            </button>
+          </div>
+        )}
+        
+        {expanded && !hasSearchActive && group.books.length > limit && (
+          <div className="mt-12 flex justify-center">
+            <button
+              onClick={() => setIsExpanded(false)}
+              className="text-gray-400 hover:text-gray-600 font-medium text-sm transition-colors flex items-center gap-1"
+            >
+              Show Less
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-16">
@@ -203,19 +264,7 @@ export default function LibrarySearch({
       ) : (
         <div className="space-y-20">
           {groupedBooks.map((group) => (
-            <div key={group.categoryName} className="scroll-mt-24">
-              <div className="flex items-center gap-4 mb-8">
-                <h2 className="text-3xl font-serif font-bold text-gray-900">{group.categoryName}</h2>
-                <div className="h-px bg-gray-200 flex-1 mt-2"></div>
-                <span className="text-sm font-medium text-gray-400 bg-gray-50 px-3 py-1 rounded-full">{group.books.length} Books</span>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-                {group.books.map((book) => (
-                  <BookCard key={book._id} book={book} />
-                ))}
-              </div>
-            </div>
+            <CategoryGroup key={group.categoryName} group={group} />
           ))}
         </div>
       )}

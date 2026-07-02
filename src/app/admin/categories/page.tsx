@@ -258,34 +258,36 @@ export default function ManageCategories() {
         ) : categories.length === 0 ? (
           <div className="p-8 text-center text-gray-500">No categories found. Create one above!</div>
         ) : (
-          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-            <table className="w-full text-left table-fixed">
-              <thead className="bg-gray-50 text-gray-600 border-b border-gray-100">
-                <tr>
-                  <th className="px-4 py-4 font-medium w-16 text-center">Drag</th>
-                  <th className="px-6 py-4 font-medium w-1/2">Category Name</th>
-                  <th className="px-6 py-4 font-medium">Slug</th>
-                  <th className="px-6 py-4 font-medium text-right w-32">Actions</th>
-                </tr>
-              </thead>
-              <SortableContext items={categories.map(c => c._id)} strategy={verticalListSortingStrategy}>
-                <tbody className="divide-y divide-gray-100">
-                  {categories.map((category) => (
-                    <SortableCategoryRow 
-                      key={category._id} 
-                      category={category} 
-                      onDelete={handleDelete}
-                      onEdit={(cat) => {
-                        setEditingId(cat._id);
-                        setFormData({ name: cat.name, slug: cat.slug });
-                        setShowForm(true);
-                      }}
-                    />
-                  ))}
-                </tbody>
-              </SortableContext>
-            </table>
-          </DndContext>
+          <div className="overflow-x-auto">
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+              <table className="w-full text-left table-fixed min-w-[600px]">
+                <thead className="bg-gray-50 text-gray-600 border-b border-gray-100">
+                  <tr>
+                    <th className="px-4 py-4 font-medium w-16 text-center">Drag</th>
+                    <th className="px-6 py-4 font-medium w-1/2">Category Name</th>
+                    <th className="px-6 py-4 font-medium">Slug</th>
+                    <th className="px-6 py-4 font-medium text-right w-32">Actions</th>
+                  </tr>
+                </thead>
+                <SortableContext items={categories.map(c => c._id)} strategy={verticalListSortingStrategy}>
+                  <tbody className="divide-y divide-gray-100">
+                    {categories.map((category) => (
+                      <SortableCategoryRow 
+                        key={category._id} 
+                        category={category} 
+                        onDelete={handleDelete}
+                        onEdit={(cat) => {
+                          setEditingId(cat._id);
+                          setFormData({ name: cat.name, slug: cat.slug });
+                          setShowForm(true);
+                        }}
+                      />
+                    ))}
+                  </tbody>
+                </SortableContext>
+              </table>
+            </DndContext>
+          </div>
         )}
       </div>
     </div>

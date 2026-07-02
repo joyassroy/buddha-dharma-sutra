@@ -9,6 +9,7 @@ export interface IBlog extends Document {
   status: "pending" | "published" | "rejected";
   coverImage?: string;
   slug: string;
+  likes: mongoose.Types.ObjectId[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -23,6 +24,7 @@ const BlogSchema: Schema = new Schema(
     status: { type: String, enum: ["pending", "published", "rejected"], default: "pending" },
     coverImage: { type: String, default: "" },
     slug: { type: String, required: true, unique: true },
+    likes: [{ type: Schema.Types.ObjectId, ref: "User" }],
   },
   {
     timestamps: true,

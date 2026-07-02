@@ -61,7 +61,7 @@ export default async function BookDetail({ params }: { params: Promise<{ slug: s
           <div className="w-48 shrink-0">
             <div className="aspect-[3/4] rounded-lg overflow-hidden bg-white shadow-xl shadow-black/10 border border-gray-200">
               {book.coverImage ? (
-                <img src={book.coverImage} alt={book.titleEn} className="w-full h-full object-cover" />
+                <img src={book.coverImage} alt={book.titleEn} className="w-full h-full object-contain p-2" />
               ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5 p-4 text-center">
                   <LibraryIcon size={32} className="text-primary/30 mb-2" />

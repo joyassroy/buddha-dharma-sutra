@@ -6,6 +6,10 @@ import Link from "next/link";
 import { ArrowLeft, Calendar, Quote, PenTool } from "lucide-react";
 import ReadingProgress from "@/components/ReadingProgress";
 import ShareButtons from "@/components/ShareButtons";
+import BlogInteractions from "@/components/BlogInteractions";
+import { getServerSession } from "next-auth";
+
+export const dynamic = "force-dynamic";
 
 async function getBlog(slug: string) {
   await connectToDatabase();
@@ -22,6 +26,14 @@ export default async function BlogDetail({ params }: { params: Promise<{ slug: s
 
   if (!blog) {
     notFound();
+  }
+
+  const session = await getServerSession();
+  let userId = null;
+  if (session?.user?.email) {
+    await connectToDatabase();
+    const user = await User.findOne({ email: session.user.email });
+    if (user) userId = user._id.toString();
   }
 
   return (
@@ -113,10 +125,19 @@ export default async function BlogDetail({ params }: { params: Promise<{ slug: s
             </div>
 
             {/* Social Share Connect */}
-            <div className="mt-16 pt-8 border-t border-gray-100 flex flex-col items-center">
+            <div className="mt-16 pt-8 flex flex-col items-center">
               <p className="font-serif text-xl italic text-gray-600 text-center mb-2">Did you find this insight helpful?</p>
               <ShareButtons title={`Read this insight: ${blog.titleEn} by ${blog.authorId?.name}`} />
             </div>
+
+            {/* Interactions */}
+            <BlogInteractions 
+              blogId={blog._id} 
+              initialLikesCount={blog.likes?.length || 0}
+              initialIsLiked={userId ? blog.likes?.includes(userId) : false}
+              isLoggedIn={!!userId}
+              userImage={session?.user?.image}
+            />
 
           </div>
         </div>

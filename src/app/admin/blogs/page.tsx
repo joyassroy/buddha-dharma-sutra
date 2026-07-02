@@ -116,21 +116,21 @@ export default function AdminBlogReview() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-4 md:mt-0">
                   {/* Status Badge */}
                   <div>
-                    {blog.status === "pending" && <span className="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-semibold">Pending</span>}
-                    {blog.status === "published" && <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">Published</span>}
-                    {blog.status === "rejected" && <span className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold">Rejected</span>}
+                    {blog.status === "pending" && <span className="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap">Pending</span>}
+                    {blog.status === "published" && <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap">Published</span>}
+                    {blog.status === "rejected" && <span className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap">Rejected</span>}
                   </div>
 
                   {/* Actions */}
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <button 
                       onClick={() => setExpandedBlogId(expandedBlogId === blog._id ? null : blog._id)}
                       className="flex items-center gap-1 bg-gray-100 text-gray-700 hover:bg-gray-200 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
                     >
-                      <FileText size={16} /> {expandedBlogId === blog._id ? "Hide Content" : "Read Content"}
+                      <FileText size={16} /> <span className="hidden sm:inline">{expandedBlogId === blog._id ? "Hide Content" : "Read Content"}</span>
                     </button>
                     
                     {blog.status === "pending" && (
@@ -139,23 +139,23 @@ export default function AdminBlogReview() {
                           onClick={() => updateStatus(blog._id, "published")}
                           className="flex items-center gap-1 bg-green-50 text-green-600 hover:bg-green-100 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
                         >
-                          <Check size={16} /> Approve
+                          <Check size={16} /> <span className="hidden sm:inline">Approve</span>
                         </button>
                         <button 
                           onClick={() => updateStatus(blog._id, "rejected")}
                           className="flex items-center gap-1 bg-red-50 text-red-600 hover:bg-red-100 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
                         >
-                          <X size={16} /> Reject
+                          <X size={16} /> <span className="hidden sm:inline">Reject</span>
                         </button>
                       </>
                     )}
                     
                     <button 
                       onClick={() => deleteBlog(blog._id)}
-                      className="flex items-center gap-1 bg-gray-50 text-gray-500 hover:bg-red-50 hover:text-red-600 px-3 py-2 rounded-lg text-sm font-medium transition-colors ml-2"
+                      className="flex items-center gap-1 bg-gray-50 text-gray-500 hover:bg-red-50 hover:text-red-600 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
                       title="Delete Blog"
                     >
-                      <Trash2 size={16} /> Delete
+                      <Trash2 size={16} /> <span className="hidden sm:inline">Delete</span>
                     </button>
                   </div>
                 </div>

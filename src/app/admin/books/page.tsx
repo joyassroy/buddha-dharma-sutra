@@ -271,31 +271,33 @@ export default function ManageBooks() {
             <p>No books found in this category.</p>
           </div>
         ) : (
-          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-            <table className="w-full text-left table-fixed">
-              <thead className="bg-gray-50 text-gray-600 border-b border-gray-100">
-                <tr>
-                  <th className="px-4 py-4 font-medium w-16 text-center">Drag</th>
-                  <th className="px-6 py-4 font-medium">Book Title</th>
-                  <th className="px-6 py-4 font-medium">Author</th>
-                  <th className="px-6 py-4 font-medium w-40">Category</th>
-                  <th className="px-6 py-4 font-medium w-24">Link</th>
-                  <th className="px-6 py-4 font-medium text-right w-32">Actions</th>
-                </tr>
-              </thead>
-              <SortableContext items={filteredBooks.map(b => b._id)} strategy={verticalListSortingStrategy}>
-                <tbody className="divide-y divide-gray-100">
-                  {filteredBooks.map((book) => (
-                    <SortableBookRow 
-                      key={book._id} 
-                      book={book} 
-                      onDelete={handleDelete}
-                    />
-                  ))}
-                </tbody>
-              </SortableContext>
-            </table>
-          </DndContext>
+          <div className="overflow-x-auto">
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+              <table className="w-full text-left table-fixed min-w-[800px]">
+                <thead className="bg-gray-50 text-gray-600 border-b border-gray-100">
+                  <tr>
+                    <th className="px-4 py-4 font-medium w-16 text-center">Drag</th>
+                    <th className="px-6 py-4 font-medium">Book Title</th>
+                    <th className="px-6 py-4 font-medium">Author</th>
+                    <th className="px-6 py-4 font-medium w-40">Category</th>
+                    <th className="px-6 py-4 font-medium w-24">Link</th>
+                    <th className="px-6 py-4 font-medium text-right w-32">Actions</th>
+                  </tr>
+                </thead>
+                <SortableContext items={filteredBooks.map(b => b._id)} strategy={verticalListSortingStrategy}>
+                  <tbody className="divide-y divide-gray-100">
+                    {filteredBooks.map((book) => (
+                      <SortableBookRow 
+                        key={book._id} 
+                        book={book} 
+                        onDelete={handleDelete}
+                      />
+                    ))}
+                  </tbody>
+                </SortableContext>
+              </table>
+            </DndContext>
+          </div>
         )}
       </div>
     </div>

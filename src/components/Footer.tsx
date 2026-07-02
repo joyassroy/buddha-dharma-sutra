@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BookOpen, Mail, Heart, Globe, MessageCircle, Video } from "lucide-react";
+import { BookOpen, Mail, Heart, Globe, Phone } from "lucide-react";
 import BuddhistFlag from "./BuddhistFlag";
 import Image from "next/image";
 
@@ -29,10 +29,9 @@ export default function Footer() {
               Explore sacred sutras, profound insights, and a vast library of Dhamma books to guide your spiritual journey.
             </p>
             <div className="flex gap-4">
-              <SocialIcon href="#" icon={<Video size={20} />} />
-              <SocialIcon href="#" icon={<MessageCircle size={20} />} />
-              <SocialIcon href="#" icon={<Globe size={20} />} />
-              <SocialIcon href="mailto:contact@example.com" icon={<Mail size={20} />} />
+              <SocialIcon href="mailto:jbhe382@gmail.com" icon={<Mail size={20} />} aria-label="Email us" />
+              <SocialIcon href="tel:+8801403926676" icon={<Phone size={20} />} aria-label="Call us" />
+              <SocialIcon href="https://joyassroy-barua.me" icon={<Globe size={20} />} aria-label="Developer Portfolio" />
             </div>
           </div>
 

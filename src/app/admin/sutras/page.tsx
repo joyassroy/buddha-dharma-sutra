@@ -71,41 +71,43 @@ export default function ManageSutras() {
         ) : sutras.length === 0 ? (
           <div className="p-8 text-center text-gray-500">No sutras found. Click "Add New Sutra" to create one.</div>
         ) : (
-          <table className="w-full text-left">
-            <thead className="bg-gray-50 text-gray-600 border-b border-gray-100">
-              <tr>
-                <th className="px-6 py-4 font-medium">English Title</th>
-                <th className="px-6 py-4 font-medium">Bengali Title</th>
-                <th className="px-6 py-4 font-medium">Source</th>
-                <th className="px-6 py-4 font-medium text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {sutras.map((sutra) => (
-                <tr key={sutra._id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4 font-medium text-gray-900">{sutra.titleEn}</td>
-                  <td className="px-6 py-4 text-gray-600">{sutra.titleBn}</td>
-                  <td className="px-6 py-4 text-gray-500">
-                    <span className="bg-gray-100 px-3 py-1 rounded-full text-xs font-medium">{sutra.source}</span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex justify-end gap-3">
-                      {/* Note: Edit feature will be added soon. Just keeping the button for layout */}
-                      <button className="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition-colors">
-                        <Edit size={18} />
-                      </button>
-                      <button 
-                        onClick={() => handleDelete(sutra._id)}
-                        className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors"
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </div>
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left min-w-[800px]">
+              <thead className="bg-gray-50 text-gray-600 border-b border-gray-100">
+                <tr>
+                  <th className="px-6 py-4 font-medium">English Title</th>
+                  <th className="px-6 py-4 font-medium">Bengali Title</th>
+                  <th className="px-6 py-4 font-medium">Source</th>
+                  <th className="px-6 py-4 font-medium text-right">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {sutras.map((sutra) => (
+                  <tr key={sutra._id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4 font-medium text-gray-900">{sutra.titleEn}</td>
+                    <td className="px-6 py-4 text-gray-600">{sutra.titleBn}</td>
+                    <td className="px-6 py-4 text-gray-500">
+                      <span className="bg-gray-100 px-3 py-1 rounded-full text-xs font-medium">{sutra.source}</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex justify-end gap-3">
+                        {/* Note: Edit feature will be added soon. Just keeping the button for layout */}
+                        <button className="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition-colors">
+                          <Edit size={18} />
+                        </button>
+                        <button 
+                          onClick={() => handleDelete(sutra._id)}
+                          className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>

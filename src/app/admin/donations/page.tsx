@@ -82,7 +82,7 @@ export default function AdminDonationRequests() {
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
+          <table className="w-full text-left text-sm min-w-[800px]">
             <thead className="bg-gray-50 text-gray-600 font-medium border-b border-gray-100">
               <tr>
                 <th className="px-6 py-4">Date</th>

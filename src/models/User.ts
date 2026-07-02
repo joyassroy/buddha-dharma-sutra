@@ -5,6 +5,7 @@ export interface IUser extends Document {
   email: string;
   image?: string;
   role: "user" | "admin";
+  isBannedFromCommenting: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -15,6 +16,7 @@ const UserSchema: Schema = new Schema(
     email: { type: String, required: true, unique: true },
     image: { type: String, default: "" },
     role: { type: String, enum: ["user", "admin"], default: "user" },
+    isBannedFromCommenting: { type: Boolean, default: false },
   },
   {
     timestamps: true,

@@ -1,15 +1,23 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Link2, MessageCircle } from "lucide-react";
 import toast from "react-hot-toast";
 
 export default function ShareButtons({ title, text }: { title: string, text?: string }) {
-  const url = typeof window !== "undefined" ? window.location.href : "";
+  const [url, setUrl] = useState("");
+
+  useEffect(() => {
+    setUrl(window.location.href);
+  }, []);
 
   const handleCopyLink = () => {
+    if (!url) return;
     navigator.clipboard.writeText(url);
     toast.success("Link copied to clipboard!");
   };
+
+  if (!url) return null; // Avoid rendering until URL is available on client
 
   return (
     <div className="flex items-center gap-3 py-6 mt-8 border-t border-gray-100">
