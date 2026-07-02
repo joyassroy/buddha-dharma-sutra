@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Save, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import toast from "react-hot-toast";
 
-export default function NoticeForm() {
+function NoticeFormContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
@@ -183,5 +183,13 @@ export default function NoticeForm() {
         </div>
       </form>
     </div>
+  );
+}
+
+export default function NoticeForm() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-gray-500">Loading form...</div>}>
+      <NoticeFormContent />
+    </Suspense>
   );
 }

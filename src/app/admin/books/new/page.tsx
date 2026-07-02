@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -11,7 +12,7 @@ type Category = {
   name: string;
 };
 
-export default function NewBook() {
+function NewBookContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const editId = searchParams.get("id");
@@ -306,5 +307,13 @@ export default function NewBook() {
 
       </form>
     </div>
+  );
+}
+
+export default function NewBook() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-gray-500">Loading form...</div>}>
+      <NewBookContent />
+    </Suspense>
   );
 }
