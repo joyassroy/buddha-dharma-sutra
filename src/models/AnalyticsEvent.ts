@@ -4,6 +4,7 @@ export interface IAnalyticsEvent extends Document {
   eventType: string; // "PAGE_VIEW", "SEARCH", "CLICK"
   path: string;
   details?: string;
+  deviceId?: string;
   createdAt: Date;
 }
 
@@ -12,6 +13,7 @@ const AnalyticsEventSchema: Schema = new Schema(
     eventType: { type: String, required: true },
     path: { type: String, required: true },
     details: { type: String, default: "" },
+    deviceId: { type: String, default: "" },
   },
   {
     timestamps: true, // Auto-manages createdAt and updatedAt

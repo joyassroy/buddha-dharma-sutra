@@ -8,7 +8,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { eventType, path, details } = body;
+    const { eventType, path, details, deviceId } = body;
 
     // We don't need to block if this fails, so we can just fire and forget or await it.
     await connectToDatabase();
@@ -16,6 +16,7 @@ export async function POST(req: Request) {
       eventType: eventType || "PAGE_VIEW",
       path: path || "/",
       details: details || "",
+      deviceId: deviceId || "",
     });
 
     return NextResponse.json({ success: true }, { status: 201 });
@@ -40,7 +41,7 @@ export async function GET(req: Request) {
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-    // Aggregate Views over the last 7 days
+    // Aggregate Unique Visitors over the last 7 days
     const dailyViews = await AnalyticsEvent.aggregate([
       { 
         $match: { 
@@ -51,7 +52,12 @@ export async function GET(req: Request) {
       {
         $group: {
           _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
-          views: { $sum: 1 }
+          uniqueDevices: { $addToSet: { $cond: [ { $and: [ { $ne: ["$deviceId", null] }, { $ne: ["$deviceId", ""] } ] }, "$deviceId", "$_id" ] } }
+        }
+      },
+      {
+        $project: {
+          views: { $size: "$uniqueDevices" }
         }
       },
       { $sort: { _id: 1 } }

@@ -67,6 +67,8 @@ const jsonLd = {
   }
 };
 
+import NextTopLoader from 'nextjs-toploader';
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -85,6 +87,7 @@ export default function RootLayout({
       </head>
       <body className="h-full">
         <Providers>
+          <NextTopLoader color="#059669" showSpinner={false} height={3} />
           <Toaster 
             position="bottom-right"
             toastOptions={{

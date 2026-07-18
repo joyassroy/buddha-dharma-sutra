@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import connectToDatabase from "@/lib/mongodb";
 import Book from "@/models/Book";
+import "@/models/Category"; // Import Category model to prevent MissingSchemaError during populate
 
 // GET all Books
 export async function GET() {

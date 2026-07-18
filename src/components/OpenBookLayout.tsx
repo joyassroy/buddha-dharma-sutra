@@ -54,13 +54,13 @@ export default function OpenBookLayout({ children }: { children: ReactNode }) {
               />
             </div>
             {/* Floating Badge */}
-            <div className="absolute -bottom-6 -left-6 bg-white p-4 rounded-2xl shadow-xl flex items-center gap-3 border border-primary/10 animate-float">
-              <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center text-accent">
-                <BookOpen size={20} aria-hidden="true" />
+            <div className="absolute -bottom-4 left-4 sm:-bottom-6 sm:-left-6 bg-white p-3 sm:p-4 rounded-2xl shadow-xl flex items-center gap-3 border border-primary/10 animate-float z-10 max-w-[calc(100%-2rem)] sm:max-w-none">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-accent/20 flex shrink-0 items-center justify-center text-accent">
+                <BookOpen size={18} className="sm:w-5 sm:h-5" aria-hidden="true" />
               </div>
-              <div>
-                <p className="text-xs text-foreground/60 font-semibold uppercase tracking-wider">Collection</p>
-                <p className="font-bold text-foreground font-serif">10,000+ Sutras</p>
+              <div className="truncate">
+                <p className="text-[10px] sm:text-xs text-foreground/60 font-semibold uppercase tracking-wider">Collection</p>
+                <p className="font-bold text-sm sm:text-base text-foreground font-serif truncate">10,000+ Sutras</p>
               </div>
             </div>
           </div>
