@@ -30,7 +30,6 @@ function NewBookContent() {
     description: "",
     externalUrl: "",
     category: "",
-    status: "published",
   });
 
   useEffect(() => {
@@ -54,7 +53,7 @@ function NewBookContent() {
 
   const fetchBookToEdit = async () => {
     try {
-      const res = await fetch("/api/books?all=true");
+      const res = await fetch("/api/books?mine=true");
       const data = await res.json();
       if (data.success) {
         const book = data.data.find((b: any) => b._id === editId);
@@ -66,7 +65,6 @@ function NewBookContent() {
             description: book.description || "",
             externalUrl: book.fileUrl.startsWith("http") ? book.fileUrl : "",
             category: book.category?._id || book.category || "",
-            status: book.status || "published",
           });
         }
       }
@@ -175,7 +173,7 @@ function NewBookContent() {
 
       if (data.success) {
         toast.success(isEditing ? "Book updated!" : "Book saved successfully!", { id: loadingToast });
-        router.push("/admin/books");
+        router.push("/writer/books");
       } else {
         toast.error("Failed to save book: " + data.error, { id: loadingToast });
       }
@@ -189,7 +187,7 @@ function NewBookContent() {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="flex items-center gap-4 mb-8">
-        <Link href="/admin/books" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+        <Link href="/writer/books" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
           <ArrowLeft size={24} className="text-gray-600" />
         </Link>
         <h1 className="text-3xl font-bold text-gray-800 font-serif">
@@ -240,22 +238,6 @@ function NewBookContent() {
             </select>
           </div>
         </div>
-
-        {isEditing && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Status</label>
-              <select 
-                name="status" value={formData.status} onChange={handleChange}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-              >
-                <option value="pending">Pending</option>
-                <option value="published">Published</option>
-                <option value="rejected">Rejected</option>
-              </select>
-            </div>
-          </div>
-        )}
 
         <div className="space-y-4">
           <label className="text-sm font-medium text-gray-700 block border-b pb-2">

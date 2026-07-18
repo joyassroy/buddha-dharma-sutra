@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Plus, Trash2, Library, GripVertical, Edit2, Check, X } from "lucide-react";
+import { Plus, Trash2, Library, GripVertical, Edit2 } from "lucide-react";
 import toast from "react-hot-toast";
 import {
   DndContext,
@@ -36,18 +36,13 @@ type Book = {
   category: Category | null;
   order: number;
   status: "pending" | "published" | "rejected";
-  submittedBy?: { name: string; email: string };
 };
 
 // Sortable Item Component
 function SortableBookRow({ 
   book, 
-  onDelete,
-  onStatusChange,
 }: { 
   book: Book; 
-  onDelete: (id: string) => void;
-  onStatusChange: (id: string, status: "published" | "rejected") => void;
 }) {
   const {
     attributes,
@@ -87,29 +82,13 @@ function SortableBookRow({
         )}
       </td>
       <td className="px-6 py-4">
-        {book.submittedBy ? (
-          <div className="text-sm">
-            <div className="font-medium text-gray-900">{book.submittedBy.name}</div>
-            <div className="text-xs text-gray-500">{book.submittedBy.email}</div>
-          </div>
-        ) : (
-          <span className="text-xs text-gray-400">Admin</span>
-        )}
-      </td>
-      <td className="px-6 py-4">
-        <select
-          value={book.status || 'published'}
-          onChange={(e) => onStatusChange(book._id, e.target.value as "pending" | "published" | "rejected")}
-          className={`px-3 py-1.5 rounded-md text-xs font-medium border-0 cursor-pointer outline-none ring-1 ring-inset focus:ring-2 focus:ring-primary/20 ${
-            book.status === 'published' ? 'bg-green-50 text-green-700 ring-green-600/20' :
-            book.status === 'pending' ? 'bg-yellow-50 text-yellow-700 ring-yellow-600/20' :
-            'bg-red-50 text-red-700 ring-red-600/20'
-          }`}
-        >
-          <option value="pending" className="bg-white text-gray-900">Pending</option>
-          <option value="published" className="bg-white text-gray-900">Published</option>
-          <option value="rejected" className="bg-white text-gray-900">Rejected</option>
-        </select>
+        <span className={`inline-flex px-2 py-1 rounded-md text-xs font-medium ${
+          book.status === 'published' ? 'bg-green-50 text-green-700' :
+          book.status === 'pending' ? 'bg-yellow-50 text-yellow-700' :
+          'bg-red-50 text-red-700'
+        }`}>
+          {book.status || 'published'}
+        </span>
       </td>
       <td className="px-6 py-4 text-gray-500">
         <a href={book.fileUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline truncate inline-block max-w-[100px]">
@@ -119,17 +98,11 @@ function SortableBookRow({
       <td className="px-6 py-4">
         <div className="flex justify-end gap-2 relative z-20">
           <Link 
-            href={`/admin/books/new?id=${book._id}`}
+            href={`/writer/books/new?id=${book._id}`}
             className="text-gray-400 hover:text-primary hover:bg-primary/5 p-2 rounded-lg transition-colors"
           >
             <Edit2 size={18} />
           </Link>
-          <button 
-            onClick={(e) => { e.stopPropagation(); onDelete(book._id); }}
-            className="text-gray-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors"
-          >
-            <Trash2 size={18} />
-          </button>
         </div>
       </td>
     </tr>
@@ -156,7 +129,7 @@ export default function ManageBooks() {
 
   const fetchBooks = async () => {
     try {
-      const res = await fetch("/api/books?all=true");
+      const res = await fetch("/api/books?mine=true");
       const data = await res.json();
       if (data.success) {
         setBooks(data.data);
@@ -180,43 +153,7 @@ export default function ManageBooks() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this book?")) return;
-    
-    const loadingToast = toast.loading("Deleting book...");
-    try {
-      const res = await fetch(`/api/books/${id}`, { method: "DELETE" });
-      const data = await res.json();
-      if (data.success) {
-        setBooks(books.filter((b) => b._id !== id));
-        toast.success("Book deleted successfully", { id: loadingToast });
-      } else {
-        toast.error("Failed to delete book", { id: loadingToast });
-      }
-    } catch (error) {
-      toast.error("Error deleting book", { id: loadingToast });
-    }
-  };
 
-  const handleStatusChange = async (id: string, status: "published" | "rejected") => {
-    const loadingToast = toast.loading(`Marking as ${status}...`);
-    try {
-      const res = await fetch(`/api/admin/books/${id}/status`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status })
-      });
-      const data = await res.json();
-      if (data.success) {
-        setBooks(books.map(b => b._id === id ? { ...b, status } : b));
-        toast.success(`Book successfully ${status}`, { id: loadingToast });
-      } else {
-        toast.error("Failed to update status", { id: loadingToast });
-      }
-    } catch (error) {
-      toast.error("Error updating status", { id: loadingToast });
-    }
-  };
 
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
@@ -280,8 +217,8 @@ export default function ManageBooks() {
     <div>
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800 font-serif">Manage Library</h1>
-          <p className="text-gray-500">Drag books to reorder them (filter by category first for best results)</p>
+          <h1 className="text-3xl font-bold text-gray-800 font-serif">My Books</h1>
+          <p className="text-gray-500">Manage the books you have submitted</p>
         </div>
         <div className="flex items-center gap-3 w-full md:w-auto">
           <select
@@ -296,7 +233,7 @@ export default function ManageBooks() {
             <option value="uncategorized">Uncategorized</option>
           </select>
           <Link 
-            href="/admin/books/new" 
+            href="/writer/books/new" 
             className="bg-primary text-white px-5 py-2.5 rounded-xl font-medium flex items-center gap-2 hover:bg-emerald-700 transition-colors shadow-sm whitespace-nowrap"
           >
             <Plus size={20} />
@@ -322,17 +259,16 @@ export default function ManageBooks() {
         ) : (
           <div className="overflow-x-auto">
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-              <table className="w-full text-left table-fixed min-w-[1000px]">
+              <table className="w-full text-left table-fixed min-w-[800px]">
                 <thead className="bg-gray-50 text-gray-600 border-b border-gray-100">
                   <tr>
                     <th className="px-4 py-4 font-medium w-16 text-center">Drag</th>
                     <th className="px-6 py-4 font-medium">Book Title</th>
                     <th className="px-6 py-4 font-medium">Author</th>
                     <th className="px-6 py-4 font-medium w-40">Category</th>
-                    <th className="px-6 py-4 font-medium w-48">Added By</th>
-                    <th className="px-6 py-4 font-medium w-36">Status</th>
-                    <th className="px-6 py-4 font-medium w-28">Link</th>
-                    <th className="px-6 py-4 font-medium text-right w-28">Actions</th>
+                    <th className="px-6 py-4 font-medium w-24">Status</th>
+                    <th className="px-6 py-4 font-medium w-24">Link</th>
+                    <th className="px-6 py-4 font-medium text-right w-32">Actions</th>
                   </tr>
                 </thead>
                 <SortableContext items={filteredBooks.map(b => b._id)} strategy={verticalListSortingStrategy}>
@@ -341,8 +277,6 @@ export default function ManageBooks() {
                       <SortableBookRow 
                         key={book._id} 
                         book={book} 
-                        onDelete={handleDelete}
-                        onStatusChange={handleStatusChange}
                       />
                     ))}
                   </tbody>

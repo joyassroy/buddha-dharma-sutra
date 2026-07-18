@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Users, Search, Loader2, Calendar, Shield, ShieldAlert, Mail } from "lucide-react";
+import { Users, Search, Loader2, Calendar, Shield, ShieldAlert, Mail, PenTool } from "lucide-react";
+import toast from "react-hot-toast";
 
 interface UserData {
   _id: string;
   name: string;
-  email: string;
   image: string;
-  role: "user" | "admin";
+  role: "user" | "admin" | "writer";
   isBannedFromCommenting: boolean;
   createdAt: string;
 }
@@ -40,6 +40,27 @@ export default function UsersAdminPage() {
     user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     user.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const handleRoleChange = async (userId: string, newRole: string) => {
+    const loadingToast = toast.loading("Updating role...");
+    try {
+      const res = await fetch(`/api/admin/users/${userId}/role`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ role: newRole }),
+      });
+      const data = await res.json();
+      
+      if (res.ok && data.success) {
+        setUsers(users.map(u => u._id === userId ? { ...u, role: newRole as any } : u));
+        toast.success("Role updated successfully!", { id: loadingToast });
+      } else {
+        toast.error(data.error || "Failed to update role", { id: loadingToast });
+      }
+    } catch (error) {
+      toast.error("An error occurred while updating role", { id: loadingToast });
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -115,17 +136,19 @@ export default function UsersAdminPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      {user.role === "admin" ? (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700">
-                          <ShieldAlert className="w-3 h-3" />
-                          Admin
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
-                          <Shield className="w-3 h-3" />
-                          User
-                        </span>
-                      )}
+                      <select
+                        value={user.role}
+                        onChange={(e) => handleRoleChange(user._id, e.target.value)}
+                        className={`text-xs font-medium px-2.5 py-1.5 rounded-xl border focus:outline-none transition-colors ${
+                          user.role === "admin" ? "bg-purple-50 text-purple-700 border-purple-200" :
+                          user.role === "writer" ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
+                          "bg-blue-50 text-blue-700 border-blue-200"
+                        }`}
+                      >
+                        <option value="admin">Admin</option>
+                        <option value="writer">Writer</option>
+                        <option value="user">User</option>
+                      </select>
                     </td>
                     <td className="px-6 py-4 text-gray-500">
                       <div className="flex items-center gap-1.5">

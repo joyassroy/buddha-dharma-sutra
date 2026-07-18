@@ -19,7 +19,6 @@ function NewSutraContent() {
     contentPali: "",
     contentBn: "",
     source: "",
-    status: "published",
   });
 
   useEffect(() => {
@@ -39,7 +38,6 @@ function NewSutraContent() {
           contentPali: data.data.contentPali || "",
           contentBn: data.data.contentBn || "",
           source: data.data.source || "",
-          status: data.data.status || "published",
         });
       }
     } catch (error) {
@@ -69,7 +67,7 @@ function NewSutraContent() {
       const data = await res.json();
       if (data.success) {
         toast.success(isEditing ? "Sutra updated!" : "Sutra saved successfully!", { id: loadingToast });
-        router.push("/admin/sutras");
+        router.push("/writer/sutras");
       } else {
         toast.error("Failed to save sutra: " + data.error, { id: loadingToast });
       }
@@ -83,7 +81,7 @@ function NewSutraContent() {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="flex items-center gap-4 mb-8">
-        <Link href="/admin/sutras" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+        <Link href="/writer/sutras" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
           <ArrowLeft size={24} className="text-gray-600" />
         </Link>
         <h1 className="text-3xl font-bold text-gray-800 font-serif">
@@ -120,22 +118,6 @@ function NewSutraContent() {
             placeholder="e.g. Khuddaka Nikaya"
           />
         </div>
-
-        {isEditing && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Status</label>
-              <select 
-                name="status" value={formData.status} onChange={handleChange}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-              >
-                <option value="pending">Pending</option>
-                <option value="published">Published</option>
-                <option value="rejected">Rejected</option>
-              </select>
-            </div>
-          </div>
-        )}
 
         <div className="space-y-2">
           <label className="text-sm font-medium text-gray-700">Pali Content (Verses)</label>

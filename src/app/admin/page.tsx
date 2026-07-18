@@ -24,9 +24,9 @@ export default function AdminDashboard() {
     try {
       // Parallel fetches for speed
       const [sutrasRes, blogsRes, booksRes, analyticsRes] = await Promise.all([
-        fetch("/api/sutras"),
+        fetch("/api/sutras?all=true"),
         fetch("/api/admin/blogs"),
-        fetch("/api/books"),
+        fetch("/api/books?all=true"),
         fetch("/api/analytics")
       ]);
 

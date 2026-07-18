@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import connectToDatabase from "@/lib/mongodb";
 import Sutra from "@/models/Sutra";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 // GET a specific Sutra by ID
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -19,9 +21,19 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 // UPDATE a Sutra
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
     await connectToDatabase();
     const { id } = await params;
     const body = await req.json();
+    
+    // If writer is updating, reset status to pending
+    if ((session.user as any).role === "writer") {
+      body.status = "pending";
+    }
     
     // Update slug if titleEn changes
     if (body.titleEn) {
@@ -40,6 +52,11 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 // DELETE a Sutra
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user || (session.user as any).role !== "admin") {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
     await connectToDatabase();
     const { id } = await params;
     const deletedSutra = await Sutra.findByIdAndDelete(id);

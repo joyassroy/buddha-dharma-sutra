@@ -10,6 +10,8 @@ export interface IBook extends Document {
   slug: string;
   category?: mongoose.Types.ObjectId;
   order: number;
+  status: "pending" | "published" | "rejected";
+  submittedBy?: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -25,6 +27,8 @@ const BookSchema: Schema = new Schema(
     slug: { type: String, required: true, unique: true },
     category: { type: Schema.Types.ObjectId, ref: "Category" },
     order: { type: Number, default: 0 },
+    status: { type: String, enum: ["pending", "published", "rejected"], default: "published" },
+    submittedBy: { type: Schema.Types.ObjectId, ref: "User" },
   },
   {
     timestamps: true,

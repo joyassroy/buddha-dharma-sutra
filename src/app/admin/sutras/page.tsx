@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Plus, Edit, Trash2 } from "lucide-react";
+import { Plus, Edit, Trash2, Check, X } from "lucide-react";
 import toast from "react-hot-toast";
 
 type Sutra = {
@@ -10,6 +10,8 @@ type Sutra = {
   titleEn: string;
   titleBn: string;
   source: string;
+  status: "pending" | "published" | "rejected";
+  submittedBy?: { name: string; email: string };
 };
 
 export default function ManageSutras() {
@@ -22,7 +24,7 @@ export default function ManageSutras() {
 
   const fetchSutras = async () => {
     try {
-      const res = await fetch("/api/sutras");
+      const res = await fetch("/api/sutras?all=true");
       const data = await res.json();
       if (data.success) {
         setSutras(data.data);
@@ -52,6 +54,26 @@ export default function ManageSutras() {
     }
   };
 
+  const handleStatusChange = async (id: string, status: "published" | "rejected") => {
+    const loadingToast = toast.loading(`Marking as ${status}...`);
+    try {
+      const res = await fetch(`/api/admin/sutras/${id}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSutras(sutras.map(s => s._id === id ? { ...s, status } : s));
+        toast.success(`Sutra successfully ${status}`, { id: loadingToast });
+      } else {
+        toast.error("Failed to update status", { id: loadingToast });
+      }
+    } catch (error) {
+      toast.error("Error updating status", { id: loadingToast });
+    }
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-8">
@@ -72,13 +94,15 @@ export default function ManageSutras() {
           <div className="p-8 text-center text-gray-500">No sutras found. Click "Add New Sutra" to create one.</div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left min-w-[800px]">
+            <table className="w-full text-left min-w-[1000px]">
               <thead className="bg-gray-50 text-gray-600 border-b border-gray-100">
                 <tr>
                   <th className="px-6 py-4 font-medium">English Title</th>
                   <th className="px-6 py-4 font-medium">Bengali Title</th>
                   <th className="px-6 py-4 font-medium">Source</th>
-                  <th className="px-6 py-4 font-medium text-right">Actions</th>
+                  <th className="px-6 py-4 font-medium w-48">Added By</th>
+                  <th className="px-6 py-4 font-medium w-36">Status</th>
+                  <th className="px-6 py-4 font-medium text-right w-28">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -90,11 +114,38 @@ export default function ManageSutras() {
                       <span className="bg-gray-100 px-3 py-1 rounded-full text-xs font-medium">{sutra.source}</span>
                     </td>
                     <td className="px-6 py-4">
+                      {sutra.submittedBy ? (
+                        <div className="text-sm">
+                          <div className="font-medium text-gray-900">{sutra.submittedBy.name}</div>
+                          <div className="text-xs text-gray-500">{sutra.submittedBy.email}</div>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-gray-400">Admin</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      <select
+                        value={sutra.status || 'published'}
+                        onChange={(e) => handleStatusChange(sutra._id, e.target.value as "pending" | "published" | "rejected")}
+                        className={`px-3 py-1.5 rounded-md text-xs font-medium border-0 cursor-pointer outline-none ring-1 ring-inset focus:ring-2 focus:ring-primary/20 ${
+                          sutra.status === 'published' ? 'bg-green-50 text-green-700 ring-green-600/20' :
+                          sutra.status === 'pending' ? 'bg-yellow-50 text-yellow-700 ring-yellow-600/20' :
+                          'bg-red-50 text-red-700 ring-red-600/20'
+                        }`}
+                      >
+                        <option value="pending" className="bg-white text-gray-900">Pending</option>
+                        <option value="published" className="bg-white text-gray-900">Published</option>
+                        <option value="rejected" className="bg-white text-gray-900">Rejected</option>
+                      </select>
+                    </td>
+                    <td className="px-6 py-4">
                       <div className="flex justify-end gap-3">
-                        {/* Note: Edit feature will be added soon. Just keeping the button for layout */}
-                        <button className="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition-colors">
+                        <Link 
+                          href={`/admin/sutras/new?id=${sutra._id}`}
+                          className="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition-colors"
+                        >
                           <Edit size={18} />
-                        </button>
+                        </Link>
                         <button 
                           onClick={() => handleDelete(sutra._id)}
                           className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors"

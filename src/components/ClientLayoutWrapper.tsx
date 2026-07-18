@@ -7,14 +7,14 @@ import Footer from "./Footer";
 export default function ClientLayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   
-  // Hide Navbar and Footer on /admin routes and its subroutes
-  const isAdminRoute = pathname?.startsWith("/admin");
+  // Hide Navbar and Footer on /admin and /writer routes
+  const isPanelRoute = pathname?.startsWith("/admin") || pathname?.startsWith("/writer");
 
   return (
-    <div className={`min-h-full flex flex-col ${isAdminRoute ? "" : "pt-20"} bg-background text-foreground`}>
-      {!isAdminRoute && <Navbar />}
+    <div className={`min-h-full flex flex-col ${isPanelRoute ? "" : "pt-20"} bg-background text-foreground`}>
+      {!isPanelRoute && <Navbar />}
       <main className="flex-grow">{children}</main>
-      {!isAdminRoute && <Footer />}
+      {!isPanelRoute && <Footer />}
     </div>
   );
 }

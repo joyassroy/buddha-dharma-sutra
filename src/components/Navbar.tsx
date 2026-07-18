@@ -117,7 +117,7 @@ export default function Navbar() {
                     </div>
                     
                     <Link 
-                      href={(session.user as any)?.role === "admin" ? "/admin" : "/dashboard"}
+                      href={(session.user as any)?.role === "admin" ? "/admin" : (session.user as any)?.role === "writer" ? "/writer" : "/dashboard"}
                       className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors"
                       onClick={() => setProfileDropdownOpen(false)}
                     >
@@ -201,7 +201,7 @@ export default function Navbar() {
                   
                   <div className="space-y-2">
                     <Link 
-                      href={(session.user as any)?.role === "admin" ? "/admin" : "/dashboard"}
+                      href={(session.user as any)?.role === "admin" ? "/admin" : (session.user as any)?.role === "writer" ? "/writer" : "/dashboard"}
                       className="flex items-center justify-center gap-2 bg-white text-primary w-full px-5 py-3 rounded-xl border border-primary/20 font-medium shadow-sm"
                       onClick={() => setMobileMenuOpen(false)}
                     >

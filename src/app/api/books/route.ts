@@ -1,13 +1,29 @@
 import { NextResponse } from "next/server";
 import connectToDatabase from "@/lib/mongodb";
 import Book from "@/models/Book";
-import "@/models/Category"; // Import Category model to prevent MissingSchemaError during populate
+import "@/models/Category";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../auth/[...nextauth]/route";
 
 // GET all Books
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const { searchParams } = new URL(req.url);
+    const all = searchParams.get("all") === "true";
+    const mine = searchParams.get("mine") === "true";
+    
     await connectToDatabase();
-    const books = await Book.find({}).populate("category").sort({ order: 1, createdAt: -1 });
+    
+    const filter: any = all ? {} : { status: "published" };
+    
+    if (mine) {
+      const session = await getServerSession(authOptions);
+      if (session?.user) {
+        filter.submittedBy = (session.user as any).id;
+        delete filter.status; // Remove the published restriction for writers viewing their own books
+      }
+    }
+    const books = await Book.find(filter).populate("category").populate("submittedBy", "name email").sort({ order: 1, createdAt: -1 });
     return NextResponse.json({ success: true, data: books }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ success: false, error: "Failed to fetch books" }, { status: 500 });
@@ -17,8 +33,26 @@ export async function GET() {
 // POST a new Book
 export async function POST(req: Request) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
     await connectToDatabase();
     const body = await req.json();
+
+    const role = (session.user as any).role;
+    const userId = (session.user as any).id;
+    
+    body.submittedBy = userId;
+    
+    if (role === "writer") {
+      body.status = "pending";
+    } else if (role === "admin") {
+      body.status = "published";
+    } else {
+      return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
+    }
     
     // Simple slug generator fallback
     const baseTitle = body.titleEn || body.titleBn || "untitled-book";

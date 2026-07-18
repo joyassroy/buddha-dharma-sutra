@@ -51,8 +51,9 @@ export const authOptions: NextAuthOptions = {
           });
         }
 
-        // Attach role to the user object so it gets passed to jwt callback
+        // Attach role and id to the user object so it gets passed to jwt callback
         (user as any).role = dbUser.role;
+        (user as any).id = dbUser._id.toString();
         return true;
       }
       return true;
@@ -63,12 +64,14 @@ export const authOptions: NextAuthOptions = {
       }
       if (user) {
         token.role = (user as any).role || "admin"; // Credentials login defaults to admin
+        token.id = (user as any).id || "1";
       }
       return token;
     },
     async session({ session, token }) {
       if (session?.user) {
         (session.user as any).role = token.role;
+        (session.user as any).id = token.id;
       }
       return session;
     }

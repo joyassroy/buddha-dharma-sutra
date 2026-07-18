@@ -7,6 +7,8 @@ export interface ISutra extends Document {
   contentBn?: string;
   source: string;
   slug: string;
+  status: "pending" | "published" | "rejected";
+  submittedBy?: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -19,6 +21,8 @@ const SutraSchema: Schema = new Schema(
     contentBn: { type: String, default: "" },
     source: { type: String, required: true },
     slug: { type: String, required: true, unique: true },
+    status: { type: String, enum: ["pending", "published", "rejected"], default: "published" },
+    submittedBy: { type: Schema.Types.ObjectId, ref: "User" },
   },
   {
     timestamps: true,

@@ -1,6 +1,7 @@
 "use client";
 
 import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { PenTool, Clock, LogOut, CheckCircle, XCircle, Edit2, Save, X } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -14,6 +15,7 @@ type Blog = {
 };
 
 export default function UserDashboard() {
+  const router = useRouter();
   const { data: session, update } = useSession();
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
@@ -21,7 +23,11 @@ export default function UserDashboard() {
   const [newName, setNewName] = useState("");
 
   useEffect(() => {
-    if (session?.user?.email) {
+    if (session?.user) {
+      if ((session.user as any).role === "writer") {
+        router.push("/writer");
+        return;
+      }
       fetchUserBlogs();
       setNewName(session.user.name || "");
     }
