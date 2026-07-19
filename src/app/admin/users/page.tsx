@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 interface UserData {
   _id: string;
   name: string;
+  email: string;
   image: string;
   role: "user" | "admin" | "writer";
   isBannedFromCommenting: boolean;
