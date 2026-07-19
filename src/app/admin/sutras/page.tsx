@@ -54,7 +54,7 @@ export default function ManageSutras() {
     }
   };
 
-  const handleStatusChange = async (id: string, status: "published" | "rejected") => {
+  const handleStatusChange = async (id: string, status: "pending" | "published" | "rejected") => {
     const loadingToast = toast.loading(`Marking as ${status}...`);
     try {
       const res = await fetch(`/api/admin/sutras/${id}/status`, {

@@ -47,7 +47,7 @@ function SortableBookRow({
 }: { 
   book: Book; 
   onDelete: (id: string) => void;
-  onStatusChange: (id: string, status: "published" | "rejected") => void;
+  onStatusChange: (id: string, status: "pending" | "published" | "rejected") => void;
 }) {
   const {
     attributes,
@@ -198,7 +198,7 @@ export default function ManageBooks() {
     }
   };
 
-  const handleStatusChange = async (id: string, status: "published" | "rejected") => {
+  const handleStatusChange = async (id: string, status: "pending" | "published" | "rejected") => {
     const loadingToast = toast.loading(`Marking as ${status}...`);
     try {
       const res = await fetch(`/api/admin/books/${id}/status`, {
